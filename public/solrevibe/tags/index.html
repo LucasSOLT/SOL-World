@@ -367,6 +367,181 @@ html.is-tablet .exit-hint { top: 62px !important; right: 10px !important; }
   .m-checkin-trigger { width: 100%; justify-content: center; padding: 10px 18px; margin-top: 4px; }
 }
 
+/* Gentle Post-Session Invitation Popup (appears slowly before the survey) */
+.m-box.invite-mode > .m-info .m-checkin-trigger { display: none !important; }
+@media (max-width: 640px) {
+  .m-box.invite-mode > .player {
+    aspect-ratio: auto !important;
+    min-height: 410px !important;
+  }
+  .m-box.invite-mode > .player > iframe {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+}
+.tlc-invite-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: radial-gradient(circle at 50% 38%, rgba(44, 39, 33, 0.85) 0%, rgba(24, 21, 18, 0.94) 100%);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 1.15s cubic-bezier(0.22, 1, 0.36, 1), visibility 1.15s ease;
+}
+.tlc-invite-overlay.show {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+.tlc-invite-overlay.fading-out {
+  opacity: 0 !important;
+  pointer-events: none !important;
+  transition: opacity .45s ease !important;
+}
+.tlc-invite-card {
+  width: 100%;
+  max-width: 452px;
+  padding: 26px 28px 22px;
+  border-radius: 22px;
+  background: #F8F5EF;
+  border: 1px solid #E5DFD3;
+  box-shadow: 0 24px 64px rgba(18, 15, 11, 0.42), inset 0 1px 0 rgba(255, 255, 255, 0.75);
+  text-align: center;
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  color: #3A3630;
+  opacity: 0;
+  transform: translateY(14px) scale(0.982);
+  transition: opacity 1.65s cubic-bezier(0.16, 1, 0.3, 1) 0.22s, transform 1.65s cubic-bezier(0.16, 1, 0.3, 1) 0.22s;
+}
+.tlc-invite-overlay.show .tlc-invite-card {
+  opacity: 1;
+  transform: none;
+}
+.tlc-invite-overlay.fading-out .tlc-invite-card {
+  opacity: 0;
+  transform: translateY(-6px) scale(0.99);
+  transition: opacity .4s ease, transform .4s ease;
+}
+.tlc-invite-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  margin-bottom: 14px;
+  border-radius: 999px;
+  background: #EEF1EC;
+  border: 1px solid #DCE3D9;
+  color: #657869;
+  font-size: .68rem;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+.tlc-invite-eyebrow::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #7F9283;
+}
+.tlc-invite-msg {
+  font-size: .93rem;
+  line-height: 1.68;
+  color: #3E3A34;
+  font-weight: 400;
+  margin: 0 auto 12px;
+}
+.tlc-invite-cta-lead {
+  font-size: .88rem;
+  line-height: 1.5;
+  color: #5D564C;
+  font-weight: 600;
+  margin: 0 auto 10px;
+}
+.tlc-invite-arrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  margin: 0 auto 12px;
+  border-radius: 50%;
+  background: #F3ECE0;
+  border: 1px solid #E5D7BF;
+  color: #B28954;
+  animation: tlcArrowFloat 2.6s ease-in-out infinite;
+}
+.tlc-invite-arrow svg {
+  width: 15px;
+  height: 15px;
+}
+@keyframes tlcArrowFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(4px); }
+}
+.tlc-invite-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+.tlc-begin-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-width: 188px;
+  padding: 13px 34px;
+  border: 0;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #7F9283 0%, #C29B68 100%);
+  color: #fff;
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  font-size: .95rem;
+  font-weight: 700;
+  letter-spacing: .02em;
+  cursor: pointer;
+  box-shadow: 0 10px 26px rgba(127, 146, 131, 0.28);
+  transition: transform .22s ease, filter .22s ease, box-shadow .22s ease;
+}
+.tlc-begin-btn:hover {
+  filter: brightness(1.05);
+  transform: translateY(-1px);
+  box-shadow: 0 12px 30px rgba(194, 155, 104, 0.34);
+}
+.tlc-invite-skip {
+  border: 0;
+  background: transparent;
+  color: #8A8379;
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  font-size: .78rem;
+  font-weight: 600;
+  padding: 4px 10px;
+  cursor: pointer;
+  transition: color .18s ease;
+}
+.tlc-invite-skip:hover { color: #4A453E; }
+@media (max-width: 640px) {
+  .m-box.invite-mode > .player { min-height: 430px !important; }
+  .tlc-invite-overlay { padding: 20px 16px; }
+  .tlc-invite-card { padding: 22px 20px 18px; border-radius: 18px; }
+  .tlc-invite-msg { font-size: .87rem; line-height: 1.6; }
+  .tlc-invite-cta-lead { font-size: .83rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tlc-invite-overlay, .tlc-invite-card { transition-duration: .2s !important; transition-delay: 0s !important; }
+  .tlc-invite-arrow { animation: none; }
+}
+
 html .modal .m-box.survey-mode,
 html.is-tablet .modal .m-box.survey-mode {
   width: min(700px, calc(100vw - 24px)) !important;
@@ -396,12 +571,15 @@ html.is-tablet .modal .m-box.survey-mode {
   background: #F8F5EF;
   color: #2B2926;
   font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
-  animation: tlcFadeIn .36s cubic-bezier(.22,1,.36,1) both;
+  animation: tlcFadeIn 1.2s cubic-bezier(.16, 1, .3, 1) both;
 }
 .m-box.survey-mode .tlc-survey { display: flex; }
 @keyframes tlcFadeIn {
-  from { opacity: 0; transform: translateY(10px) scale(.99); }
+  from { opacity: 0; transform: translateY(12px) scale(.99); }
   to { opacity: 1; transform: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tlc-survey { animation-duration: .2s; }
 }
 
 .tlc-topbar {
@@ -1064,6 +1242,20 @@ html.is-tablet .modal .m-box.survey-mode {
       <div class="resume-overlay" id="resumeOverlay" aria-hidden="true">
         <button type="button" class="resume-btn" id="resumeBtn"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 4.5v15l13-7.5z"/></svg><span id="resumeBtnLabel">Play Again</span></button>
         <span class="resume-note" id="resumeNote" aria-live="polite"></span>
+      </div>
+      <div class="tlc-invite-overlay" id="tlcInviteOverlay" aria-hidden="true">
+        <div class="tlc-invite-card" role="region" aria-label="Post-session reflection">
+          <div class="tlc-invite-eyebrow">Session Complete</div>
+          <p class="tlc-invite-msg">We truly hope you feel renewed, centered, and inspired to take your experience farther than just this moment. What we learn in these moments of reflection can be life-changing, so we urge you to take that knowledge into your day.</p>
+          <p class="tlc-invite-cta-lead">We recommend you start by clicking this button</p>
+          <div class="tlc-invite-arrow" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M6 13l6 6 6-6"/></svg>
+          </div>
+          <div class="tlc-invite-actions">
+            <button type="button" class="tlc-begin-btn" id="tlcBeginBtn">Let&rsquo;s begin</button>
+            <button type="button" class="tlc-invite-skip" id="tlcInviteSkipBtn">Not now</button>
+          </div>
+        </div>
       </div>
     </div>
     <div class="m-info">
@@ -1819,8 +2011,47 @@ html.is-tablet .modal .m-box.survey-mode {
     tlcDoneView.hidden = true;
   }
 
+  const tlcInviteOverlay = $("tlcInviteOverlay"),
+        tlcBeginBtn = $("tlcBeginBtn"),
+        tlcInviteSkipBtn = $("tlcInviteSkipBtn");
+  let tlcInviteTransitionTimer = null;
+
+  function hideTlcInvite(){
+    clearTimeout(tlcInviteTransitionTimer);
+    mBox.classList.remove("invite-mode");
+    tlcInviteOverlay.classList.remove("show", "fading-out");
+    tlcInviteOverlay.setAttribute("aria-hidden", "true");
+  }
+
+  function openTlcInvite(){
+    if (mBox.classList.contains("survey-mode") || tlcInviteOverlay.classList.contains("show")) return;
+    vimeoCmd("setCurrentTime", 0);
+    vimeoCmd("pause");
+    hideResume();
+    hideExitHint();
+    tlcInviteOverlay.classList.remove("fading-out");
+    mBox.classList.add("invite-mode");
+    tlcInviteOverlay.setAttribute("aria-hidden", "false");
+    void tlcInviteOverlay.offsetWidth;
+    tlcInviteOverlay.classList.add("show");
+  }
+
+  function beginSurveyFromInvite(){
+    if (!tlcInviteOverlay.classList.contains("show")) {
+      openTlcSurvey();
+      return;
+    }
+    tlcInviteOverlay.classList.add("fading-out");
+    clearTimeout(tlcInviteTransitionTimer);
+    tlcInviteTransitionTimer = setTimeout(() => {
+      hideTlcInvite();
+      openTlcSurvey();
+    }, 380);
+  }
+
   function openTlcSurvey(){
     if (mBox.classList.contains("survey-mode")) return;
+    hideTlcInvite();
     vimeoCmd("pause");
     hideResume();
     hideExitHint();
@@ -1828,11 +2059,12 @@ html.is-tablet .modal .m-box.survey-mode {
     tlcSurvey.setAttribute("aria-hidden", "false");
     $("tlcScroll").scrollTop = 0;
     const firstBtn = tlcOpenScale.querySelector(".tlc-num-btn");
-    if (firstBtn) setTimeout(() => firstBtn.focus({ preventScroll: true }), 60);
+    if (firstBtn) setTimeout(() => firstBtn.focus({ preventScroll: true }), 180);
   }
 
   function closeTlcSurveyToVideo(restart){
     stopAllVoice();
+    hideTlcInvite();
     mBox.classList.remove("survey-mode");
     tlcSurvey.setAttribute("aria-hidden", "true");
     if (restart) {
@@ -1952,6 +2184,8 @@ html.is-tablet .modal .m-box.survey-mode {
     $("tlcDoneCloseBtn").focus({ preventScroll: true });
   });
 
+  tlcBeginBtn.addEventListener("click", beginSurveyFromInvite);
+  tlcInviteSkipBtn.addEventListener("click", closeModal);
   $("tlcReplayBtn").addEventListener("click", () => closeTlcSurveyToVideo(true));
   $("tlcSkipTopBtn").addEventListener("click", closeModal);
   $("tlcSkipBottomBtn").addEventListener("click", closeModal);
@@ -2067,7 +2301,7 @@ html.is-tablet .modal .m-box.survey-mode {
     hideResume();
     vimeoCmd("pause"); // Prevent Vimeo's default "More from SOL REViBE Team" end-screen from taking over
     if (pauser.endSurvey === "thought-loop") {
-      openTlcSurvey();
+      openTlcInvite();
     } else {
       showExitHint();
       showEndReplay();
@@ -2076,7 +2310,7 @@ html.is-tablet .modal .m-box.survey-mode {
 
   function processVimeoEvent(ev, data){
     if (!pauser.active) return;
-    if (ev === "play") { hideResume(); return; }                           // resumed via the player's own controls
+    if (ev === "play") { hideResume(); hideTlcInvite(); return; }           // resumed via the player's own controls
     if (ev === "ended") { handleVideoEnd(); return; }
     const t = data && typeof data.seconds === "number" ? data.seconds : null;
     if (t === null) return;
@@ -2164,6 +2398,7 @@ html.is-tablet .modal .m-box.survey-mode {
     countView(v);
     lastFocus = document.activeElement;
     resetTlcSurvey();
+    hideTlcInvite();
     mBox.classList.remove("survey-mode");
     tlcSurvey.setAttribute("aria-hidden", "true");
     $("m-title").textContent = v.title;
@@ -2182,6 +2417,7 @@ html.is-tablet .modal .m-box.survey-mode {
     if(!modal.classList.contains("open")) return;
     const backToTags = pauser.exitHint || pauser.endSurvey === "thought-loop";
     resetTlcSurvey();
+    hideTlcInvite();
     mBox.classList.remove("survey-mode");
     tlcSurvey.setAttribute("aria-hidden", "true");
     modal.classList.remove("open"); modal.setAttribute("aria-hidden","true");
@@ -2213,13 +2449,13 @@ html.is-tablet .modal .m-box.survey-mode {
   modal.addEventListener("click", e => {
     if (e.target === modal) {
       // Prevent accidental backdrop tap from discarding an in-progress check-in on tablets
-      if (mBox.classList.contains("survey-mode") && !tlcState.submitted) return;
+      if ((mBox.classList.contains("survey-mode") || mBox.classList.contains("invite-mode")) && !tlcState.submitted) return;
       closeModal();
     }
   });
   document.addEventListener("keydown", e => {
     if(e.key==="Escape") closeModal();
-    if(e.key==="Tab" && modal.classList.contains("open") && !mBox.classList.contains("survey-mode")){
+    if(e.key==="Tab" && modal.classList.contains("open") && !mBox.classList.contains("survey-mode") && !mBox.classList.contains("invite-mode")){
       const hasCheckinBtn = mCheckinTrigger.classList.contains("visible");
       const r = resumeOverlay.classList.contains("show");
       if (!hasCheckinBtn) {
