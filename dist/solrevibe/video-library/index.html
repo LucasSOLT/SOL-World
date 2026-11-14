@@ -6,14 +6,14 @@
 <title>Therapeutic Audio Guides (TAGs) | SOL REViBE</title>
 <meta name="description" content="Explore the SOL REViBE on-demand Therapeutic Audio Guides (TAGs): frequency, wellness and restoration experiences.">
 <!-- Link-preview (share) card: snapshot of this page -->
-<link rel="canonical" href="https://www.solrevibe.com/video-library">
+<link rel="canonical" href="https://www.solrevibe.com/tags">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="SOL REViBE">
-<meta property="og:url" content="https://www.solrevibe.com/video-library">
+<meta property="og:url" content="https://www.solrevibe.com/tags">
 <meta property="og:title" content="Therapeutic Audio Guides (TAGs) | SOL REViBE">
 <meta property="og:description" content="Discover frequency, wellness, and restoration experiences with SOL REViBE's on-demand Therapeutic Audio Guides.">
-<meta property="og:image" content="https://www.solrevibe.com/video-library/share-thumb.jpg">
-<meta property="og:image:secure_url" content="https://www.solrevibe.com/video-library/share-thumb.jpg">
+<meta property="og:image" content="https://www.solrevibe.com/tags/share-thumb.jpg">
+<meta property="og:image:secure_url" content="https://www.solrevibe.com/tags/share-thumb.jpg">
 <meta property="og:image:type" content="image/jpeg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -21,11 +21,14 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Therapeutic Audio Guides (TAGs) | SOL REViBE">
 <meta name="twitter:description" content="Discover frequency, wellness, and restoration experiences with SOL REViBE's on-demand Therapeutic Audio Guides.">
-<meta name="twitter:image" content="https://www.solrevibe.com/video-library/share-thumb.jpg">
+<meta name="twitter:image" content="https://www.solrevibe.com/tags/share-thumb.jpg">
 <meta name="twitter:image:alt" content="SOL REViBE Therapeutic Audio Guides (TAGs) page with the featured Customer Instructional Video">
+<script>if(location.pathname.indexOf('video-library')!==-1){location.replace(location.pathname.replace(/video-library(\/index\.html)?\/?$/,'tags')+location.search+location.hash);}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://player.vimeo.com">
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://player.vimeo.com/api/player.js" defer></script>
 <style>
 :root{
   --bg:#EDE6DB; --panel:rgba(247,245,241,.85); --line:rgba(107,122,130,.35); --line-soft:rgba(43,43,43,.1);
@@ -273,7 +276,8 @@ footer b { color: #2B2926 !important; }
 .close:hover { background: #C29B68 !important; color: #fff; }
 :focus-visible { outline-color: #C29B68 !important; }
 /* Auto-pause "Play Again" overlay (shown over the video at each step break) */
-.resume-overlay { position: absolute; inset: 0; z-index: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; background: rgba(30,26,22,.42); opacity: 0; visibility: hidden; transition: opacity .25s ease, visibility .25s ease; }
+.resume-overlay { position: absolute; inset: 0; z-index: 2; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; background: rgba(30,26,22,.42); opacity: 0; visibility: hidden; transition: opacity .25s ease, visibility .25s ease; }
+.resume-overlay.end-cover { background: linear-gradient(160deg, rgba(32,28,24,.97) 0%, rgba(20,18,15,.98) 100%); backdrop-filter: blur(8px); }
 .resume-overlay.show { opacity: 1; visibility: visible; }
 .resume-btn { display: inline-flex; align-items: center; gap: 10px; padding: 16px 34px; border: 0; border-radius: 999px; background: linear-gradient(90deg, #7F9283 0%, #C29B68 100%); color: #fff; font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; font-size: 1.05rem; letter-spacing: .02em; cursor: pointer; box-shadow: 0 10px 30px rgba(0,0,0,.35); transform: scale(.94); transition: transform .25s ease, filter .2s ease; }
 .resume-overlay.show .resume-btn { transform: none; animation: resumePulse 2.2s ease-in-out infinite; }
@@ -360,6 +364,9 @@ html.is-tablet .exit-hint { top: 62px !important; right: 10px !important; }
 .m-checkin-trigger.visible { display: inline-flex; }
 .m-checkin-trigger:hover { background: #F5ECDC; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(194,155,104,.22); }
 .m-checkin-trigger svg { width: 15px; height: 15px; color: #C29B68; }
+@media (max-width: 600px) {
+  .m-checkin-trigger { width: 100%; justify-content: center; padding: 10px 18px; margin-top: 4px; }
+}
 
 html .modal .m-box.survey-mode,
 html.is-tablet .modal .m-box.survey-mode {
@@ -1246,18 +1253,32 @@ html.is-tablet .modal .m-box.survey-mode {
     },
     {
       id: 2,
-      vimeoId: "1239524014",
+      vimeoId: "1245793823",
       title: "TAG 1 - Thought Loop Clearing",
       category: "TAGs",
-      duration: "18:11",
+      duration: "15:01",
       days: 1,
       views: 12,
       featured: false,
       endSurvey: "thought-loop", // ONLY this session opens the Thought Loop Clearing check-in at completion
       hue: [210, 280],
       tags: ["tag", "tags", "thought loop", "clearing", "relaxation"],
-      thumb: "https://i.vimeocdn.com/video/2217082313-4fa281963d46ca4c34b90b6afdc1b8ade9df4828d2f54f0d91b178ec55ea1e85-d_640x360",
-      description: "A synchronized 18-minute therapeutic audio guide designed to clear thought loops, quiet mental noise, and restore mind-body balance."
+      thumb: "https://i.vimeocdn.com/video/2225226848-d5e96fb7165271dd0bc3b40051b7eea6411da29a0ca53a3a35d18a3742968550-d_640x360",
+      description: "A synchronized 15-minute therapeutic audio guide designed to clear thought loops, quiet mental noise, and restore mind-body balance."
+    },
+    {
+      id: 3,
+      vimeoId: "1245985622",
+      title: "Rigging Future Echoes",
+      category: "TAGs",
+      duration: "10:49",
+      days: 1,
+      views: 0,
+      featured: false,
+      hue: [35, 200],
+      tags: ["tag", "tags", "rigging future echoes", "rigging future echos", "the law of action", "theo wilson", "jason mcbride"],
+      thumb: "https://i.vimeocdn.com/video/2225445654-e1b279bc44a1729d2ca83b8a577e94946f5c3dcaad10513c2e84f0406ca39852-d_640x360",
+      description: "In Your Favor — featuring Theo Wilson & Jason McBride (The Law of Action Series)."
     }
   ];
 
@@ -1857,7 +1878,7 @@ html.is-tablet .modal .m-box.survey-mode {
       formType: "thought_loop_clearing_reflection",
       submittedAt: new Date().toISOString(),
       videoId: activeVideo ? activeVideo.id : 2,
-      vimeoId: activeVideo ? activeVideo.vimeoId : "1239524014",
+      vimeoId: activeVideo ? activeVideo.vimeoId : "1245793823",
       videoTitle: activeVideo ? activeVideo.title : "TAG 1 - Thought Loop Clearing",
       stationLocation: readSavedStationLocation(),
       openingNumber: tlcState.openNum,
@@ -1938,13 +1959,32 @@ html.is-tablet .modal .m-box.survey-mode {
   $("tlcDoneCloseBtn").addEventListener("click", closeModal);
   mCheckinTrigger.addEventListener("click", openTlcSurvey);
 
-  // ---- Auto-pause points & Vimeo end-screen suppression via Vimeo postMessage API ----
+  // ---- Auto-pause points & Vimeo end-screen suppression (Official SDK + postMessage fallback) ----
   const VIMEO_ORIGIN = "https://player.vimeo.com";
-  const pauser = { active: false, points: [], fired: {}, last: 0, holdAt: null, exitHint: false, endSurvey: null, endHandled: false, atEnd: false };
+  const pauser = { active: false, points: [], fired: {}, last: 0, holdAt: null, exitHint: false, endSurvey: null, endHandled: false, atEnd: false, sdkReady: false };
   const resumeOverlay = $("resumeOverlay"), resumeBtn = $("resumeBtn"), resumeBtnLabel = $("resumeBtnLabel"), resumeNote = $("resumeNote");
   let vimeoBindTimers = [];
+  let vimeoSdk = null;
+
+  function detachVimeoSdk(){
+    if (!vimeoSdk) return;
+    try {
+      ["play", "ended", "timeupdate", "seeked"].forEach(ev => {
+        if (typeof vimeoSdk.off === "function") vimeoSdk.off(ev);
+      });
+    } catch(_) {}
+    vimeoSdk = null;
+    pauser.sdkReady = false;
+  }
 
   function vimeoCmd(method, value){
+    if (vimeoSdk && pauser.sdkReady) {
+      try {
+        if (method === "pause") { vimeoSdk.pause().catch(() => {}); return; }
+        if (method === "play") { vimeoSdk.play().catch(() => {}); return; }
+        if (method === "setCurrentTime") { vimeoSdk.setCurrentTime(value).catch(() => {}); return; }
+      } catch(_) {}
+    }
     if (!player.contentWindow) return;
     try {
       player.contentWindow.postMessage(JSON.stringify(value === undefined ? {method} : {method, value}), VIMEO_ORIGIN);
@@ -1953,6 +1993,7 @@ html.is-tablet .modal .m-box.survey-mode {
 
   function showResume(idx){
     pauser.atEnd = false;
+    resumeOverlay.classList.remove("end-cover");
     resumeBtnLabel.textContent = "Play Again";
     resumeNote.textContent = `Paused · Up next: Step ${idx + 2}`;
     resumeOverlay.classList.add("show"); resumeOverlay.setAttribute("aria-hidden", "false");
@@ -1961,14 +2002,18 @@ html.is-tablet .modal .m-box.survey-mode {
 
   function showEndReplay(){
     pauser.atEnd = true;
+    resumeOverlay.classList.add("end-cover");
     resumeBtnLabel.textContent = "Watch Again";
     resumeNote.textContent = "Session Complete";
     resumeOverlay.classList.add("show"); resumeOverlay.setAttribute("aria-hidden", "false");
+    vimeoCmd("setCurrentTime", 0);
+    vimeoCmd("pause");
   }
 
   function hideResume(){
     pauser.holdAt = null;
     pauser.atEnd = false;
+    resumeOverlay.classList.remove("end-cover");
     if (!resumeOverlay.classList.contains("show")) return;
     resumeOverlay.classList.remove("show"); resumeOverlay.setAttribute("aria-hidden", "true");
   }
@@ -2003,6 +2048,7 @@ html.is-tablet .modal .m-box.survey-mode {
   function armPauses(v){
     vimeoBindTimers.forEach(clearTimeout);
     vimeoBindTimers = [];
+    detachVimeoSdk();
     pauser.active = !!v;
     pauser.points = (v && v.pausePoints) ? v.pausePoints.slice().sort((a,b) => a-b) : [];
     pauser.exitHint = !!(v && v.exitHint);
@@ -2020,7 +2066,7 @@ html.is-tablet .modal .m-box.survey-mode {
     pauser.fired = {};
     pauser.last = 0;
     hideResume();
-    vimeoCmd("pause"); // Prevent Vimeo's default "More / Recommended videos" end-screen from taking over
+    vimeoCmd("pause"); // Prevent Vimeo's default "More from SOL REViBE Team" end-screen from taking over
     if (pauser.endSurvey === "thought-loop") {
       openTlcSurvey();
     } else {
@@ -2029,27 +2075,13 @@ html.is-tablet .modal .m-box.survey-mode {
     }
   }
 
-  function listenVimeo(){
+  function processVimeoEvent(ev, data){
     if (!pauser.active) return;
-    // Vimeo's postMessage API uses legacy names (playProgress/seek/finish); register both naming schemes
-    ["timeupdate", "playProgress", "seeked", "seek", "ended", "finish", "play"].forEach(ev => vimeoCmd("addEventListener", ev));
-  }
-
-  player.addEventListener("load", listenVimeo);
-
-  window.addEventListener("message", e => {
-    if (!pauser.active) return;
-    if (!e.origin || (!e.origin.includes("player.vimeo.com") && !e.origin.includes("vimeo.com"))) return;
-    let d = e.data;
-    if (typeof d === "string") { try { d = JSON.parse(d); } catch(_) { return; } }
-    if (!d || !d.event) return;
-    if (d.event === "ready") { listenVimeo(); return; }
-    const ev = { playProgress: "timeupdate", seek: "seeked", finish: "ended" }[d.event] || d.event;
     if (ev === "play") { hideResume(); return; }                           // resumed via the player's own controls
     if (ev === "ended") { handleVideoEnd(); return; }
-    const t = d.data && typeof d.data.seconds === "number" ? d.data.seconds : null;
+    const t = data && typeof data.seconds === "number" ? data.seconds : null;
     if (t === null) return;
-    const dur = d.data && typeof d.data.duration === "number" ? d.data.duration : 0;
+    const dur = data && typeof data.duration === "number" ? data.duration : 0;
     if (dur > 0) {
       const left = dur - t;
       if (left <= EXIT_HINT_SECONDS && t > 0) showExitHint();
@@ -2059,7 +2091,7 @@ html.is-tablet .modal .m-box.survey-mode {
       if (left > 2) pauser.endHandled = false;
 
       // Soft-delete Vimeo's native "Recommended videos" end-screen by intercepting right at completion
-      if (!pauser.endHandled && t > 1 && left <= 0.55) {
+      if (!pauser.endHandled && t > 1 && left <= 0.75) {
         handleVideoEnd();
         return;
       }
@@ -2082,6 +2114,49 @@ html.is-tablet .modal .m-box.survey-mode {
       pauser.holdAt = hit;
       showResume(pauser.points.indexOf(hit));                                // "Play Again" button over the video
     }
+  }
+
+  function bindVimeoSdk(){
+    if (!pauser.active || vimeoSdk) return;
+    if (!window.Vimeo || typeof window.Vimeo.Player !== "function") return;
+    try {
+      const inst = new window.Vimeo.Player(player);
+      vimeoSdk = inst;
+      inst.ready().then(() => {
+        if (vimeoSdk === inst) pauser.sdkReady = true;
+      }).catch(() => {});
+      inst.on("play", () => processVimeoEvent("play", null));
+      inst.on("ended", () => processVimeoEvent("ended", null));
+      inst.on("timeupdate", d => processVimeoEvent("timeupdate", d));
+      inst.on("seeked", d => processVimeoEvent("seeked", d));
+    } catch(_) {
+      vimeoSdk = null;
+      pauser.sdkReady = false;
+    }
+  }
+
+  function listenVimeo(){
+    if (!pauser.active) return;
+    bindVimeoSdk();
+    if (pauser.sdkReady) return;
+    // Raw postMessage fallback for environments where player.js hasn't loaded yet
+    ["timeupdate", "playProgress", "seeked", "seek", "ended", "finish", "play"].forEach(ev => {
+      if (!player.contentWindow) return;
+      try { player.contentWindow.postMessage(JSON.stringify({method: "addEventListener", value: ev}), VIMEO_ORIGIN); } catch(_) {}
+    });
+  }
+
+  player.addEventListener("load", listenVimeo);
+
+  window.addEventListener("message", e => {
+    if (!pauser.active || pauser.sdkReady) return;
+    if (!e.origin || (!e.origin.includes("player.vimeo.com") && !e.origin.includes("vimeo.com"))) return;
+    let d = e.data;
+    if (typeof d === "string") { try { d = JSON.parse(d); } catch(_) { return; } }
+    if (!d || !d.event) return;
+    if (d.event === "ready") { listenVimeo(); return; }
+    const ev = { playProgress: "timeupdate", seek: "seeked", finish: "ended" }[d.event] || d.event;
+    processVimeoEvent(ev, d.data);
   });
 
   function openModal(v){
@@ -2096,8 +2171,9 @@ html.is-tablet .modal .m-box.survey-mode {
     $("m-desc").textContent = `${v.category} · ${v.duration} · ${fmtViews(v.views)}`;
     mCheckinTrigger.classList.toggle("visible", v.endSurvey === "thought-loop");
     armPauses(v);
-    player.src = `https://player.vimeo.com/video/${v.vimeoId}?autoplay=1&title=0&byline=0&portrait=0&dnt=1&pip=0`;
-    vimeoBindTimers = [setTimeout(listenVimeo, 500), setTimeout(listenVimeo, 1400)];
+    player.src = `https://player.vimeo.com/video/${v.vimeoId}?autoplay=1&playsinline=1&title=0&byline=0&portrait=0&dnt=1&pip=0&api=1`;
+    bindVimeoSdk();
+    vimeoBindTimers = [setTimeout(listenVimeo, 500), setTimeout(listenVimeo, 1400), setTimeout(listenVimeo, 3000)];
     modal.classList.add("open"); modal.setAttribute("aria-hidden","false");
     document.body.classList.add("modal-open");
     $("close").focus();

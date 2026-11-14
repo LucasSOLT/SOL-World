@@ -1126,85 +1126,97 @@
                 </div>
 
                 <div class="bundle-selection-card">
-                    <!-- Option 1: Pay in Full ($3,995) - Preselected -->
-                    <div class="pricing-radio-option" id="plan-full-card" onclick="selectPlan('full')">
+                    <!-- Selected Package Card -->
+                    <div class="pricing-radio-option" id="plan-full-card">
                         <div class="radio-left-wrap">
                             <div class="radio-custom-circle" id="radio-full"></div>
                             <div>
-                                <div class="plan-title-bold">Complete Station Package — Pay in Full</div>
-                                <div class="plan-subtitle-tag">Pre-selected Special Offer (Save $1,000 vs MSRP)</div>
+                                <div class="plan-title-bold" id="plan-card-title">Complete Home Setup</div>
                             </div>
                         </div>
                         <div class="plan-amount-display">
-                            <span style="font-size: 13px; font-weight: 500; color: #94A3B8; text-decoration: line-through;">$4,995</span>
-                            <span>$3,995</span>
+                            <span id="plan-card-price">$2,995</span>
                         </div>
-                    </div>
-
-                    <!-- Option 2: 2-Payment Split ($2,000 x 2 = $4,000) -->
-                    <div class="pricing-radio-option inactive" id="plan-split-card" onclick="selectPlan('split')">
-                        <div class="radio-left-wrap">
-                            <div class="radio-custom-circle" id="radio-split"></div>
-                            <div>
-                                <div class="plan-title-bold">2-Payment Split Option ($4,000 Total)</div>
-                                <div style="font-size: 11.5px; color: #64748B;">2 monthly payments of $2,000.00</div>
-                            </div>
-                        </div>
-                        <div class="plan-amount-display" style="font-size: 18px;">$2,000<span style="font-size: 12px; font-weight: 500; color: #64748B;">/mo</span></div>
                     </div>
 
                     <!-- Bundled Deliverables Checklist -->
                     <div class="bundle-deliverables-box">
                         <div style="font-size: 13px; font-weight: 700; color: #0F172A; margin-bottom: 8px;">
-                            Complete Package Deliverables Included:
+                            Package Deliverables Included:
                         </div>
-                        <div class="deliverable-item">
-                            <i class="fa-solid fa-circle-check"></i>
-                            <div><strong>P90 Plus Dual-Frequency Core Platform:</strong> Terahertz resonance & PEMF bio-stimulation platform with remote.</div>
-                        </div>
-                        <div class="deliverable-item">
-                            <i class="fa-solid fa-circle-check"></i>
-                            <div><strong>Zero-Gravity Ergonomic Station Chair:</strong> Ergonomic bio-alignment wellness recliner.</div>
-                        </div>
-                        <div class="deliverable-item">
-                            <i class="fa-solid fa-circle-check"></i>
-                            <div><strong>Heavy-Duty Adjustable Station Stand & Dock:</strong> Multi-angle precision dock.</div>
-                        </div>
-                        <div class="deliverable-item">
-                            <i class="fa-solid fa-circle-check"></i>
-                            <div><strong>Ultrasonic Ambient Diffuser:</strong> Sensory aromatherapy & cool mist accompanist.</div>
-                        </div>
-                        <div class="deliverable-item">
-                            <i class="fa-solid fa-circle-check"></i>
-                            <div><strong>Retractable Banner & Display Screen Kit:</strong> Official branded SOL REViBE station backdrop.</div>
-                        </div>
-                        <div class="deliverable-item">
-                            <i class="fa-solid fa-circle-check"></i>
-                            <div><strong>2-Year Manufacturer Warranty Registration:</strong> Registered directly with your Government ID.</div>
-                        </div>
-                        <div class="deliverable-item">
-                            <i class="fa-solid fa-circle-check"></i>
-                            <div><strong>Insured White-Glove Freight Delivery:</strong> Doorstep crate delivery ($250 value — Included FREE).</div>
+                        <div id="deliverables-list-container">
+                            <div class="deliverable-item">
+                                <i class="fa-solid fa-circle-check"></i>
+                                <div>P90 Plus</div>
+                            </div>
+                            <div class="deliverable-item">
+                                <i class="fa-solid fa-circle-check"></i>
+                                <div>Chair</div>
+                            </div>
+                            <div class="deliverable-item">
+                                <i class="fa-solid fa-circle-check"></i>
+                                <div>End table</div>
+                            </div>
+                            <div class="deliverable-item">
+                                <i class="fa-solid fa-circle-check"></i>
+                                <div>Tablet stand</div>
+                            </div>
+                            <div class="deliverable-item">
+                                <i class="fa-solid fa-circle-check"></i>
+                                <div>Foot wedge</div>
+                            </div>
+                            <div class="deliverable-item">
+                                <i class="fa-solid fa-circle-check"></i>
+                                <div>Containers (2)</div>
+                            </div>
+                            <div class="deliverable-item">
+                                <i class="fa-solid fa-circle-check"></i>
+                                <div>Essential oils (3-pack)</div>
+                            </div>
+                            <div class="deliverable-item">
+                                <i class="fa-solid fa-circle-check"></i>
+                                <div>Stones for the jars</div>
+                            </div>
+                            <div class="deliverable-item">
+                                <i class="fa-solid fa-circle-check"></i>
+                                <div>Tablet</div>
+                            </div>
+                            <div class="deliverable-item">
+                                <i class="fa-solid fa-circle-check"></i>
+                                <div>Eye masks (1)</div>
+                            </div>
+                            <div class="deliverable-item">
+                                <i class="fa-solid fa-circle-check"></i>
+                                <div>Power strip</div>
+                            </div>
+                            <div class="deliverable-item">
+                                <i class="fa-solid fa-circle-check"></i>
+                                <div>Privacy screen</div>
+                            </div>
+                            <div class="deliverable-item">
+                                <i class="fa-solid fa-circle-check"></i>
+                                <div>Cleaning wipes</div>
+                            </div>
+                            <div class="deliverable-item">
+                                <i class="fa-solid fa-circle-check"></i>
+                                <div>Headphones</div>
+                            </div>
                         </div>
                     </div>
 
                     <!-- Summary calculation -->
                     <div style="margin-top: 14px; border-top: 1px solid #E2E8F0; padding-top: 10px;">
                         <div class="order-summary-row">
-                            <span>Package Regular Price:</span>
-                            <span style="text-decoration: line-through;">$4,995.00</span>
-                        </div>
-                        <div class="order-summary-row">
-                            <span>Station Package Discount:</span>
-                            <span style="color: #E11D48; font-weight: 600;">-$1,000.00</span>
+                            <span id="breakdown-plan-label">Complete Home Setup:</span>
+                            <span id="breakdown-plan-price">$2,995.00</span>
                         </div>
                         <div class="order-summary-row">
                             <span>Insured Freight Delivery:</span>
-                            <span style="color: #16A34A; font-weight: 700;">FREE ($0.00)</span>
+                            <span style="color: #16A34A; font-weight: 700;">Included</span>
                         </div>
                         <div class="order-total-row">
                             <span>Total Due Today:</span>
-                            <span class="order-total-amount" id="total-amount-label">$3,995.00</span>
+                            <span class="order-total-amount" id="total-amount-label">$2,995.00</span>
                         </div>
                     </div>
                 </div>
@@ -1291,7 +1303,7 @@
                 <!-- Submit Button -->
                 <button type="submit" class="submit-order-button" id="submit-btn">
                     <i class="fa-solid fa-lock"></i>
-                    <span id="submit-btn-text">Authorize & Complete Order - $3,995.00</span>
+                    <span id="submit-btn-text">Authorize & Complete Order - $2,995.00</span>
                 </button>
 
                 <div class="submit-trust-subtext">
@@ -1353,44 +1365,85 @@
 
     <!-- Script: Interactive Behaviors & Validation -->
     <script>
-        let currentPlan = 'full';
-        let currentPrice = 3995.00;
+        let currentPlan = 'complete';
+        let currentPrice = 2995.00;
+
+        const PLAN_CONFIGS = {
+            experience: {
+                title: 'Home Experience',
+                priceShort: '$1,995',
+                priceFormatted: '$1,995.00',
+                priceNum: 1995.00,
+                deliverables: [
+                    'OlyLife P90+ device',
+                    'Therapeutic Audio Guides (TAGs) - a Curated Collection',
+                    'Ongoing customer support'
+                ]
+            },
+            complete: {
+                title: 'Complete Home Setup',
+                priceShort: '$2,995',
+                priceFormatted: '$2,995.00',
+                priceNum: 2995.00,
+                deliverables: [
+                    'P90 Plus',
+                    'Chair',
+                    'End table',
+                    'Tablet stand',
+                    'Foot wedge',
+                    'Containers (2)',
+                    'Essential oils (3-pack)',
+                    'Stones for the jars',
+                    'Tablet',
+                    'Eye masks (1)',
+                    'Power strip',
+                    'Privacy screen',
+                    'Cleaning wipes',
+                    'Headphones'
+                ]
+            }
+        };
 
         function selectPlan(plan) {
-            currentPlan = plan === 'split' ? 'split' : 'full';
+            currentPlan = (plan === 'experience') ? 'experience' : 'complete';
+            const cfg = PLAN_CONFIGS[currentPlan];
+            currentPrice = cfg.priceNum;
             const cardFull = document.getElementById('plan-full-card');
-            const cardSplit = document.getElementById('plan-split-card');
+            const cardTitle = document.getElementById('plan-card-title');
+            const cardPrice = document.getElementById('plan-card-price');
+            const listEl = document.getElementById('deliverables-list-container');
+            const brkLabel = document.getElementById('breakdown-plan-label');
+            const brkPrice = document.getElementById('breakdown-plan-price');
             const totalLabel = document.getElementById('total-amount-label');
             const btnText = document.getElementById('submit-btn-text');
 
-            if (currentPlan === 'full') {
-                currentPrice = 3995.00;
-                cardFull.classList.remove('inactive');
-                cardSplit.classList.add('inactive');
-                totalLabel.textContent = '$3,995.00';
-                btnText.textContent = 'Authorize & Complete Order - $3,995.00';
-            } else {
-                currentPrice = 2000.00;
-                cardSplit.classList.remove('inactive');
-                cardFull.classList.add('inactive');
-                totalLabel.textContent = '$2,000.00';
-                btnText.textContent = 'Authorize 1st Payment - $2,000.00 (Total $4,000)';
+            if (cardFull) cardFull.classList.remove('inactive');
+            if (cardTitle) cardTitle.textContent = cfg.title;
+            if (cardPrice) cardPrice.textContent = cfg.priceShort;
+            if (listEl) {
+                listEl.innerHTML = cfg.deliverables.map(item => `
+                    <div class="deliverable-item">
+                        <i class="fa-solid fa-circle-check"></i>
+                        <div>${item}</div>
+                    </div>`).join('');
             }
+            if (brkLabel) brkLabel.textContent = cfg.title + ':';
+            if (brkPrice) brkPrice.textContent = cfg.priceFormatted;
+            if (totalLabel) totalLabel.textContent = cfg.priceFormatted;
+            if (btnText) btnText.textContent = 'Authorize & Complete Order - ' + cfg.priceFormatted;
         }
 
-        // Pre-populate from URL query params or sessionStorage (when redirected from customer page)
+        // Pre-populate from URL query params or sessionStorage/localStorage (when redirected from customer page)
         document.addEventListener('DOMContentLoaded', () => {
             let stored = {};
             try {
-                const raw = sessionStorage.getItem('customerOrder');
+                const raw = sessionStorage.getItem('customerOrder') || localStorage.getItem('customerOrder');
                 if (raw) stored = JSON.parse(raw) || {};
             } catch (err) {}
 
             const params = new URLSearchParams(window.location.search);
-            const planParam = params.get('plan') || stored.plan;
-            if (planParam === 'split' || planParam === 'full') {
-                selectPlan(planParam);
-            }
+            const planParam = params.get('plan') || stored.plan || 'complete';
+            selectPlan(planParam);
 
             const nameVal = params.get('name') || stored.name;
             const emailVal = params.get('email') || stored.email;
@@ -1515,7 +1568,8 @@
                     document.getElementById('conf-name-display').textContent = fullName;
                     document.getElementById('conf-order-num').textContent = 'SR-' + Math.floor(100000 + Math.random() * 900000);
                     document.getElementById('conf-warranty-status').textContent = 'ACTIVE (Registered to ID: ••••' + govId.slice(-4) + ')';
-                    document.getElementById('conf-amount-display').textContent = currentPlan === 'full' ? '$3,995.00 USD' : '$2,000.00 USD (Installment 1 of 2 • $4,000 Total)';
+                    const cfg = PLAN_CONFIGS[currentPlan] || PLAN_CONFIGS.complete;
+                    document.getElementById('conf-amount-display').textContent = cfg.priceFormatted + ' USD';
                     document.getElementById('conf-address-display').textContent = `${street}, ${city}, ${state} ${zip}`;
                     document.getElementById('conf-email-display').textContent = email;
 
