@@ -30,13 +30,6 @@ const PLAN_CATALOG = {
     name: 'SOL REViBE Business-in-a-Box Station',
     description: 'Commercial-grade PEMF station & showcase allocation package',
   },
-  test10: {
-    key: 'test10',
-    amountCents: 1000,
-    priceFormatted: '$10.00',
-    name: 'SOL REViBE Live Gateway Test ($10)',
-    description: 'Temporary $10.00 live Stripe payment verification',
-  },
 };
 
 function resolvePlan(rawPlan) {
