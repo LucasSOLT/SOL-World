@@ -2035,11 +2035,24 @@ html, body { background-color: #F3F0EA !important; background-image: none !impor
                     'Eleven-Piece Comfort Package',
                     'Priority Showcase Allocation & Setup Guide'
                 ]
+            },
+            test10: {
+                title: 'Live Gateway Test ($10)',
+                amountCents: 1000,
+                badgePill: 'Verification Only',
+                priceShort: '$10',
+                priceFormatted: '$10.00',
+                confPackage: 'SOL REViBE Live Gateway Test ($10)',
+                deliverables: [
+                    'Live Stripe $10.00 charge verification',
+                    'End-to-end PaymentIntent & receipt check'
+                ]
             }
         };
 
         function normalizePlanKey(plan) {
             const p = String(plan || '').toLowerCase().trim();
+            if (p === 'test10') return 'test10';
             if (p === 'experience') return 'experience';
             if (p === 'b2b' || p === 'station' || p === 'commercial') return 'b2b';
             return 'complete';
