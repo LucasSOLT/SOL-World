@@ -6,7 +6,7 @@
 const STRIPE_API_BASE = 'https://api.stripe.com/v1';
 
 const STRIPE_PUBLISHABLE_FALLBACK =
-  'pk_live_51RNscyGYjYbvkxDDieRGNffxUFdRzUPDMFdVAhtvSg1pko7XNu63av6QYkIi2qcCxSr7YU1jpXr9EQbLTmf8nCfp00NLG6yWlF';
+  'pk_live_51RNscyGYjYbvkxDDieRGNFfxUFdRzUPDMFdVAhtvSg1pko7XNu63av6QYkIi2qcCxSr7YU1jpXr9EQbLTmf8nCfp00NLG6yWlF';
 
 const PLAN_CATALOG = {
   experience: {

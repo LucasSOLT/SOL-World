@@ -1982,7 +1982,7 @@ html, body { background-color: #F3F0EA !important; background-image: none !impor
         let stripePaymentElement = null;
         let stripeReady = false;
 
-        const STRIPE_PK_FALLBACK = 'pk_live_51RNscyGYjYbvkxDDieRGNffxUFdRzUPDMFdVAhtvSg1pko7XNu63av6QYkIi2qcCxSr7YU1jpXr9EQbLTmf8nCfp00NLG6yWlF';
+        const STRIPE_PK_FALLBACK = 'pk_live_51RNscyGYjYbvkxDDieRGNFfxUFdRzUPDMFdVAhtvSg1pko7XNu63av6QYkIi2qcCxSr7YU1jpXr9EQbLTmf8nCfp00NLG6yWlF';
 
         const PLAN_CONFIGS = {
             experience: {
@@ -2150,6 +2150,10 @@ html, body { background-color: #F3F0EA !important; background-image: none !impor
                 stripePaymentElement.mount('#payment-element');
                 stripePaymentElement.on('ready', () => {
                     stripeReady = true;
+                });
+                stripePaymentElement.on('loaderror', (ev) => {
+                    const msg = (ev && ev.error && ev.error.message) || 'Unable to load Stripe Payment Element.';
+                    showPaymentError(msg);
                 });
                 stripePaymentElement.on('change', (ev) => {
                     if (ev.error) showPaymentError(ev.error.message);
