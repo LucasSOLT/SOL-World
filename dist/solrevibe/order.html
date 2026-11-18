@@ -2152,9 +2152,10 @@ html, body { background-color: #F3F0EA !important; background-image: none !impor
                     layout: 'tabs',
                     fields: {
                         billingDetails: {
-                            name: 'auto',
+                            name: 'never',
                             email: 'never',
-                            phone: 'never'
+                            phone: 'never',
+                            address: 'never'
                         }
                     }
                 });
@@ -2316,6 +2317,15 @@ html, body { background-color: #F3F0EA !important; background-image: none !impor
             });
         }
 
+        function normalizeCountryCode(rawCountry) {
+            const c = String(rawCountry || '').trim().toUpperCase();
+            if (c.length === 2) return c;
+            if (c === 'CANADA') return 'CA';
+            if (c === 'UNITED KINGDOM' || c === 'UK') return 'GB';
+            if (c === 'AUSTRALIA') return 'AU';
+            return 'US';
+        }
+
         // Form Submit Handler (Stripe Payment Element)
         async function handleOrderSubmit(e) {
             e.preventDefault();
@@ -2329,33 +2339,33 @@ html, body { background-color: #F3F0EA !important; background-image: none !impor
             const btn = document.getElementById('authorizeOrderBtn');
             const originalText = btn.innerHTML;
 
-            const fullName = document.getElementById('custFullName').value.trim();
-            const email = document.getElementById('custEmail').value.trim();
-            const phone = document.getElementById('custPhone').value.trim();
-            const address = document.getElementById('shipAddress').value.trim();
-            const suite = document.getElementById('shipSuite').value.trim();
-            const city = document.getElementById('shipCity').value.trim();
-            const state = document.getElementById('shipState').value.trim();
-            const zip = document.getElementById('shipZip').value.trim();
-            const country = document.getElementById('shipCountry').value || 'United States';
-            const govId = document.getElementById('govIdNumber').value.trim();
-
-            const sameAsShipping = document.getElementById('sameAsShipping').checked;
-            const billAddress = sameAsShipping ? address : document.getElementById('billAddress').value.trim();
-            const billCity = sameAsShipping ? city : document.getElementById('billCity').value.trim();
-            const billState = sameAsShipping ? state : document.getElementById('billState').value.trim();
-            const billZip = sameAsShipping ? zip : document.getElementById('billZip').value.trim();
-
             btn.disabled = true;
             btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> <span>Processing Secure Stripe Payment...</span>';
 
             try {
+                const fullName = (document.getElementById('custFullName')?.value || '').trim();
+                const email = (document.getElementById('custEmail')?.value || '').trim();
+                const phone = (document.getElementById('custPhone')?.value || '').trim();
+                const address = (document.getElementById('shipAddress')?.value || '').trim();
+                const suite = (document.getElementById('shipSuite')?.value || '').trim();
+                const city = (document.getElementById('shipCity')?.value || '').trim();
+                const state = (document.getElementById('shipState')?.value || '').trim();
+                const zip = (document.getElementById('shipZip')?.value || '').trim();
+                const country = document.getElementById('shipCountry')?.value || 'United States';
+                const countryCode = normalizeCountryCode(country);
+                const govId = (document.getElementById('govIdNumber')?.value || '').trim();
+
+                const billingCheckbox = document.getElementById('sameBillingCheck');
+                const sameAsShipping = billingCheckbox ? billingCheckbox.checked : true;
+                const billAddress = sameAsShipping ? address : (document.getElementById('billAddress')?.value || '').trim();
+                const billCity = sameAsShipping ? city : (document.getElementById('billCity')?.value || '').trim();
+                const billState = sameAsShipping ? state : (document.getElementById('billState')?.value || '').trim();
+                const billZip = sameAsShipping ? zip : (document.getElementById('billZip')?.value || '').trim();
+
                 // 1. Validate Stripe Payment Element inputs
                 const { error: submitError } = await stripeElements.submit();
                 if (submitError) {
                     showPaymentError(submitError.message || 'Please check your payment details and try again.');
-                    btn.disabled = false;
-                    btn.innerHTML = originalText;
                     return;
                 }
 
@@ -2376,7 +2386,7 @@ html, body { background-color: #F3F0EA !important; background-image: none !impor
                             city,
                             state,
                             postalCode: zip,
-                            country
+                            country: countryCode
                         },
                         billing: {
                             line1: billAddress,
@@ -2406,10 +2416,11 @@ html, body { background-color: #F3F0EA !important; background-image: none !impor
                                 phone: phone,
                                 address: {
                                     line1: billAddress || address,
+                                    line2: sameAsShipping ? suite : '',
                                     city: billCity || city,
                                     state: billState || state,
                                     postal_code: billZip || zip,
-                                    country: 'US'
+                                    country: countryCode
                                 }
                             }
                         }
@@ -2419,8 +2430,6 @@ html, body { background-color: #F3F0EA !important; background-image: none !impor
 
                 if (confirmError) {
                     showPaymentError(confirmError.message || 'Payment declined. Please check your card or try another method.');
-                    btn.disabled = false;
-                    btn.innerHTML = originalText;
                     return;
                 }
 
