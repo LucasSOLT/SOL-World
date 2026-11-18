@@ -38,6 +38,8 @@
 
     <!-- FontAwesome for Premium Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Stripe.js v3 -->
+    <script src="https://js.stripe.com/v3/"></script>
 
     <style>
         :root {
@@ -2261,6 +2263,39 @@
             }
         }
 
+        /* Stripe Payment Element & Error Alert */
+        .stripe-element-wrap {
+            background: #FBF9F5;
+            border: 1px solid #D9D4CA;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 14px;
+            min-height: 120px;
+        }
+
+        .stripe-loading-state {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            color: #6B6B6B;
+            font-size: 13.5px;
+            font-weight: 500;
+            padding: 36px 12px;
+        }
+
+        .payment-error-alert {
+            background: #FEF2F2;
+            border: 1px solid #FECACA;
+            color: #B91C1C;
+            border-radius: 10px;
+            padding: 12px 14px;
+            font-size: 13px;
+            font-weight: 500;
+            margin-bottom: 14px;
+            line-height: 1.45;
+        }
+
         @media print {
             body * {
                 visibility: hidden;
@@ -2547,60 +2582,25 @@
                             <i class="fa-brands fa-cc-mastercard" title="Mastercard"></i>
                             <i class="fa-brands fa-cc-amex" title="American Express"></i>
                             <i class="fa-brands fa-cc-discover" title="Discover"></i>
+                            <i class="fa-brands fa-apple-pay" title="Apple Pay"></i>
+                            <i class="fa-brands fa-stripe" title="Powered by Stripe" style="color: #635BFF;"></i>
                         </div>
                     </div>
 
-                    <div class="form-group">
-                        <label class="form-label" for="cardholderName">
-                            Cardholder Name <span class="req-star">*</span>
-                        </label>
-                        <div class="input-icon-wrap">
-                            <i class="fa-regular fa-user field-icon"></i>
-                            <input type="text" id="cardholderName" name="cardholder" class="form-input"
-                                placeholder="Name as printed on card" required autocomplete="cc-name">
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label" for="cardNumber">
-                            Card Number <span class="req-star">*</span>
-                        </label>
-                        <div class="input-icon-wrap">
-                            <i class="fa-regular fa-credit-card field-icon" id="cardBrandIcon"></i>
-                            <input type="text" id="cardNumber" name="cardnum" class="form-input"
-                                placeholder="4000 1234 5678 9010" required maxlength="19" autocomplete="cc-number"
-                                oninput="formatCardNumber(this)">
-                            <i class="fa-solid fa-lock field-icon-right"></i>
-                        </div>
-                    </div>
-
-                    <div class="form-grid-2">
-                        <div class="form-group">
-                            <label class="form-label" for="cardExp">
-                                Expiration Date <span class="req-star">*</span>
-                            </label>
-                            <div class="input-icon-wrap">
-                                <i class="fa-regular fa-calendar field-icon"></i>
-                                <input type="text" id="cardExp" name="exp" class="form-input" placeholder="MM / YY"
-                                    required maxlength="7" autocomplete="cc-exp" oninput="formatExpiration(this)">
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label class="form-label" for="cardCvc">
-                                Security Code (CVC) <span class="req-star">*</span>
-                            </label>
-                            <div class="input-icon-wrap">
-                                <i class="fa-solid fa-shield-halved field-icon"></i>
-                                <input type="password" id="cardCvc" name="cvc" class="form-input"
-                                    placeholder="3 or 4 digits" required maxlength="4" autocomplete="cc-csc">
+                    <div id="stripePaymentElementWrap" class="stripe-element-wrap">
+                        <div id="payment-element">
+                            <div class="stripe-loading-state">
+                                <i class="fa-solid fa-spinner fa-spin"></i>
+                                <span>Loading secure Stripe checkout...</span>
                             </div>
                         </div>
                     </div>
+
+                    <div id="paymentErrorAlert" class="payment-error-alert" role="alert" style="display: none;"></div>
 
                     <div class="payment-security-footer">
                         <i class="fa-solid fa-lock"></i>
-                        <span>Card data is processed via Level 1 PCI-DSS compliant direct payment encryption.</span>
+                        <span>Processed securely via Stripe. Card data is protected with Level 1 PCI-DSS encryption.</span>
                     </div>
                 </section>
 
@@ -2821,11 +2821,18 @@
     <!-- JAVASCRIPT LOGIC -->
     <script>
         // State variables
-        let selectedPlan = 'complete'; // 'experience' ($1,995) or 'complete' ($2,995)
+        let selectedPlan = 'complete'; // 'experience' ($1,995) | 'complete' ($2,995) | 'b2b' ($3,995)
+        let stripe = null;
+        let stripeElements = null;
+        let stripePaymentElement = null;
+        let stripeReady = false;
+
+        const STRIPE_PK_FALLBACK = 'pk_live_51RNscyGYjYbvkxDDieRGNffxUFdRzUPDMFdVAhtvSg1pko7XNu63av6QYkIi2qcCxSr7YU1jpXr9EQbLTmf8nCfp00NLG6yWlF';
 
         const PLAN_CONFIGS = {
             experience: {
                 title: 'Home Experience',
+                amountCents: 199500,
                 badgePill: 'Includes 3 Items',
                 priceShort: '$1,995',
                 priceFormatted: '$1,995.00',
@@ -2838,6 +2845,7 @@
             },
             complete: {
                 title: 'Complete Home Setup',
+                amountCents: 299500,
                 badgePill: 'Includes All 14 Items',
                 priceShort: '$2,995',
                 priceFormatted: '$2,995.00',
@@ -2858,12 +2866,46 @@
                     'Cleaning wipes',
                     'Headphones'
                 ]
+            },
+            b2b: {
+                title: 'Business-in-a-Box Station',
+                amountCents: 399500,
+                badgePill: 'Commercial Package',
+                priceShort: '$3,995',
+                priceFormatted: '$3,995.00',
+                confPackage: 'SOL REViBE Business-in-a-Box Station',
+                deliverables: [
+                    'Commercial-Grade PEMF Platform (OlyLife P90+)',
+                    'Complete TAG Audio Library',
+                    'Eleven-Piece Comfort Package',
+                    'Priority Showcase Allocation & Setup Guide'
+                ]
             }
         };
 
+        function normalizePlanKey(plan) {
+            const p = String(plan || '').toLowerCase().trim();
+            if (p === 'experience') return 'experience';
+            if (p === 'b2b' || p === 'station' || p === 'commercial') return 'b2b';
+            return 'complete';
+        }
+
+        function showPaymentError(msg) {
+            const box = document.getElementById('paymentErrorAlert');
+            if (!box) return;
+            if (!msg) {
+                box.style.display = 'none';
+                box.textContent = '';
+                return;
+            }
+            box.textContent = msg;
+            box.style.display = 'block';
+            box.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
         // Select Pricing Plan
         function selectPricingPlan(plan) {
-            selectedPlan = (plan === 'experience') ? 'experience' : 'complete';
+            selectedPlan = normalizePlanKey(plan);
             const cfg = PLAN_CONFIGS[selectedPlan];
 
             const fullCard = document.getElementById('planFullCard');
@@ -2893,6 +2935,136 @@
             if (breakdownPrice) breakdownPrice.textContent = cfg.priceFormatted;
             if (totalDisplay) totalDisplay.textContent = cfg.priceFormatted;
             if (btnLabel) btnLabel.textContent = 'Authorize & Complete Order • ' + cfg.priceFormatted;
+
+            if (stripeElements && typeof stripeElements.update === 'function') {
+                stripeElements.update({ amount: cfg.amountCents });
+            }
+        }
+
+        async function initStripeCheckout() {
+            const mountTarget = document.getElementById('payment-element');
+            if (!mountTarget) return;
+
+            if (typeof Stripe !== 'function') {
+                showPaymentError('Unable to load Stripe Checkout script. Please refresh the page or check your connection.');
+                return;
+            }
+
+            try {
+                let publishableKey = STRIPE_PK_FALLBACK;
+                try {
+                    const cfgRes = await fetch('/api/stripe-config', { cache: 'no-store' });
+                    if (cfgRes.ok) {
+                        const cfgData = await cfgRes.json();
+                        if (cfgData && cfgData.publishableKey) publishableKey = cfgData.publishableKey;
+                    }
+                } catch (_) {}
+
+                const cfg = PLAN_CONFIGS[selectedPlan] || PLAN_CONFIGS.complete;
+                stripe = Stripe(publishableKey);
+                stripeElements = stripe.elements({
+                    mode: 'payment',
+                    amount: cfg.amountCents,
+                    currency: 'usd',
+                    appearance: {
+                        theme: 'stripe',
+                        variables: {
+                            colorPrimary: '#7F9283',
+                            colorBackground: '#FFFFFF',
+                            colorText: '#2B2B2B',
+                            colorDanger: '#DC2626',
+                            fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
+                            borderRadius: '10px',
+                            spacingUnit: '4px'
+                        }
+                    }
+                });
+
+                stripePaymentElement = stripeElements.create('payment', {
+                    layout: 'tabs',
+                    fields: {
+                        billingDetails: {
+                            name: 'auto',
+                            email: 'never',
+                            phone: 'never'
+                        }
+                    }
+                });
+
+                mountTarget.innerHTML = '';
+                stripePaymentElement.mount('#payment-element');
+                stripePaymentElement.on('ready', () => {
+                    stripeReady = true;
+                });
+                stripePaymentElement.on('change', (ev) => {
+                    if (ev.error) showPaymentError(ev.error.message);
+                    else showPaymentError('');
+                });
+            } catch (err) {
+                console.error('Stripe initialization failed:', err);
+                showPaymentError('Payment gateway initialization failed. Please refresh and try again.');
+            }
+        }
+
+        function showConfirmedOrderModal({ orderRef, customerName, packageName, warrantyLast4, amountFormatted, shipAddress, email }) {
+            document.getElementById('confCustomerName').textContent = customerName || 'Valued Customer';
+            const confPkgEl = document.getElementById('confPackageName');
+            if (confPkgEl) confPkgEl.textContent = packageName;
+            document.getElementById('confOrderRef').textContent = orderRef;
+            document.getElementById('confWarrantyStatus').textContent =
+                'ACTIVE (Registered to ID: ••••' + (warrantyLast4 || '0000') + ')';
+            document.getElementById('confAmountPaid').textContent = amountFormatted + ' USD (Paid via Stripe)';
+            document.getElementById('confShipAddress').textContent = shipAddress;
+            document.getElementById('confEmailSent').textContent = email;
+            document.getElementById('confirmationModal').classList.add('active');
+        }
+
+        async function checkRedirectReturn(params) {
+            const paymentIntentId = params.get('payment_intent');
+            const redirectStatus = params.get('redirect_status');
+            if (!paymentIntentId) return;
+
+            if (redirectStatus === 'failed') {
+                showPaymentError('Your payment could not be completed. Please try another payment method.');
+                return;
+            }
+
+            try {
+                const res = await fetch(`/api/verify-payment-intent?payment_intent=${encodeURIComponent(paymentIntentId)}`);
+                const data = await res.json();
+                if (!res.ok) {
+                    showPaymentError(data.error || 'Unable to verify payment confirmation.');
+                    return;
+                }
+
+                if (data.status === 'succeeded' || data.status === 'processing') {
+                    const meta = data.metadata || {};
+                    const planCfg = PLAN_CONFIGS[normalizePlanKey(meta.plan || selectedPlan)] || PLAN_CONFIGS.complete;
+                    const ship = data.shipping || {};
+                    const shipAddrObj = ship.address || {};
+                    const shipStr = shipAddrObj.line1
+                        ? `${shipAddrObj.line1}${shipAddrObj.line2 ? ', ' + shipAddrObj.line2 : ''}, ${shipAddrObj.city || ''}, ${shipAddrObj.state || ''} ${shipAddrObj.postal_code || ''}, ${shipAddrObj.country || 'US'}`
+                        : '';
+                    const dollars = typeof data.amount === 'number'
+                        ? '$' + (data.amount / 100).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+                        : planCfg.priceFormatted;
+
+                    showConfirmedOrderModal({
+                        orderRef: data.id,
+                        customerName: meta.customer_name || ship.name || 'Valued Customer',
+                        packageName: meta.package_name || planCfg.confPackage,
+                        warrantyLast4: meta.warranty_id_last4 || '0000',
+                        amountFormatted: dollars,
+                        shipAddress: shipStr,
+                        email: data.receipt_email || meta.customer_email || ''
+                    });
+                } else {
+                    showPaymentError('Your payment was not completed (status: ' + data.status + '). No charge has been captured.');
+                }
+            } catch (err) {
+                console.error('Payment verification error:', err);
+                showPaymentError('Unable to verify payment status automatically. Please contact support@solrevibe.com.');
+            }
         }
 
         // Pre-populate from URL query params or sessionStorage/localStorage (when redirected from customer page)
@@ -2942,6 +3114,9 @@
                     addrEl.value = addrVal;
                 }
             }
+
+            initStripeCheckout();
+            checkRedirectReturn(params);
         });
 
         // Toggle Billing Address Fields
@@ -2960,48 +3135,6 @@
             input.value = !x[2] ? x[1] : '(' + x[1] + ') ' + x[2] + (x[3] ? '-' + x[3] : '');
         }
 
-        // Auto format Credit Card Number & Detect Brand
-        function formatCardNumber(input) {
-            let val = input.value.replace(/\D/g, '');
-            const brandIcon = document.getElementById('cardBrandIcon');
-
-            // Icon detection
-            if (val.startsWith('4')) {
-                brandIcon.className = 'fa-brands fa-cc-visa field-icon';
-                brandIcon.style.color = '#1A1F71';
-            } else if (val.startsWith('5') || val.startsWith('2')) {
-                brandIcon.className = 'fa-brands fa-cc-mastercard field-icon';
-                brandIcon.style.color = '#EB001B';
-            } else if (val.startsWith('3')) {
-                brandIcon.className = 'fa-brands fa-cc-amex field-icon';
-                brandIcon.style.color = '#006FCF';
-            } else if (val.startsWith('6')) {
-                brandIcon.className = 'fa-brands fa-cc-discover field-icon';
-                brandIcon.style.color = '#FF6000';
-            } else {
-                brandIcon.className = 'fa-regular fa-credit-card field-icon';
-                brandIcon.style.color = '#B8B5AE';
-            }
-
-            // Group into 4 digits
-            let formatted = '';
-            for (let i = 0; i < val.length && i < 16; i++) {
-                if (i > 0 && i % 4 === 0) formatted += ' ';
-                formatted += val[i];
-            }
-            input.value = formatted;
-        }
-
-        // Auto format Card Expiration
-        function formatExpiration(input) {
-            let val = input.value.replace(/\D/g, '');
-            if (val.length >= 2) {
-                input.value = val.substring(0, 2) + ' / ' + val.substring(2, 4);
-            } else {
-                input.value = val;
-            }
-        }
-
         // Mobile Nav Hamburger Toggle
         const navHamburgerEl = document.getElementById('navHamburger');
         if (navHamburgerEl) {
@@ -3011,16 +3144,22 @@
             });
         }
 
-        // Form Submit Handler
-        function handleOrderSubmit(e) {
+        // Form Submit Handler (Stripe Payment Element)
+        async function handleOrderSubmit(e) {
             e.preventDefault();
+            showPaymentError('');
+
+            if (!stripe || !stripeElements || !stripeReady) {
+                showPaymentError('Secure Stripe payment form is still loading. Please wait a moment and try again.');
+                return;
+            }
 
             const btn = document.getElementById('authorizeOrderBtn');
             const originalText = btn.innerHTML;
 
-            // Collect Form Values
             const fullName = document.getElementById('custFullName').value.trim();
             const email = document.getElementById('custEmail').value.trim();
+            const phone = document.getElementById('custPhone').value.trim();
             const address = document.getElementById('shipAddress').value.trim();
             const suite = document.getElementById('shipSuite').value.trim();
             const city = document.getElementById('shipCity').value.trim();
@@ -3029,34 +3168,111 @@
             const country = document.getElementById('shipCountry').value || 'United States';
             const govId = document.getElementById('govIdNumber').value.trim();
 
-            // Set loading state
-            btn.disabled = true;
-            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> <span>Processing & Encrypting Order...</span>';
+            const sameAsShipping = document.getElementById('sameAsShipping').checked;
+            const billAddress = sameAsShipping ? address : document.getElementById('billAddress').value.trim();
+            const billCity = sameAsShipping ? city : document.getElementById('billCity').value.trim();
+            const billState = sameAsShipping ? state : document.getElementById('billState').value.trim();
+            const billZip = sameAsShipping ? zip : document.getElementById('billZip').value.trim();
 
-            // Simulate authorization & warranty token registration
-            setTimeout(() => {
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> <span>Processing Secure Stripe Payment...</span>';
+
+            try {
+                const { error: submitError } = await stripeElements.submit();
+                if (submitError) {
+                    showPaymentError(submitError.message || 'Please check your payment details and try again.');
+                    btn.disabled = false;
+                    btn.innerHTML = originalText;
+                    return;
+                }
+
+                const intentRes = await fetch('/api/create-payment-intent', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        plan: selectedPlan,
+                        fullName,
+                        email,
+                        phone,
+                        govIdLast4: govId.slice(-4),
+                        sameAsShipping,
+                        shipping: {
+                            line1: address,
+                            line2: suite,
+                            city,
+                            state,
+                            postalCode: zip,
+                            country
+                        },
+                        billing: {
+                            line1: billAddress,
+                            city: billCity,
+                            state: billState,
+                            postalCode: billZip
+                        }
+                    })
+                });
+
+                const intentData = await intentRes.json().catch(() => ({}));
+                if (!intentRes.ok || !intentData.clientSecret) {
+                    throw new Error(intentData.error || 'Could not initialize payment. Please try again.');
+                }
+
+                const cleanUrl = window.location.origin + window.location.pathname + '?plan=' + encodeURIComponent(selectedPlan);
+                const { error: confirmError, paymentIntent } = await stripe.confirmPayment({
+                    elements: stripeElements,
+                    clientSecret: intentData.clientSecret,
+                    confirmParams: {
+                        return_url: cleanUrl,
+                        payment_method_data: {
+                            billing_details: {
+                                name: fullName,
+                                email: email,
+                                phone: phone,
+                                address: {
+                                    line1: billAddress || address,
+                                    city: billCity || city,
+                                    state: billState || state,
+                                    postal_code: billZip || zip,
+                                    country: 'US'
+                                }
+                            }
+                        }
+                    },
+                    redirect: 'if_required'
+                });
+
+                if (confirmError) {
+                    showPaymentError(confirmError.message || 'Payment declined. Please check your card or try another method.');
+                    btn.disabled = false;
+                    btn.innerHTML = originalText;
+                    return;
+                }
+
+                if (paymentIntent && (paymentIntent.status === 'succeeded' || paymentIntent.status === 'processing')) {
+                    const cfg = PLAN_CONFIGS[selectedPlan] || PLAN_CONFIGS.complete;
+                    const idLast4 = govId.length > 4 ? govId.slice(-4) : govId;
+                    const fullStreet = suite ? `${address}, ${suite}` : address;
+
+                    showConfirmedOrderModal({
+                        orderRef: paymentIntent.id,
+                        customerName: fullName,
+                        packageName: cfg.confPackage,
+                        warrantyLast4: idLast4,
+                        amountFormatted: cfg.priceFormatted,
+                        shipAddress: `${fullStreet}, ${city}, ${state} ${zip}, ${country}`,
+                        email
+                    });
+                } else {
+                    showPaymentError('Payment status requires additional action. Please follow the prompt or try again.');
+                }
+            } catch (err) {
+                console.error('Order checkout failed:', err);
+                showPaymentError(err.message || 'An unexpected error occurred while processing your payment.');
+            } finally {
                 btn.disabled = false;
                 btn.innerHTML = originalText;
-
-                // Populate confirmation modal
-                const randomRef = 'SR-' + Math.floor(100000 + Math.random() * 900000);
-                const idLast4 = govId.length > 4 ? govId.slice(-4) : '8412';
-                const cfg = PLAN_CONFIGS[selectedPlan] || PLAN_CONFIGS.complete;
-                const amountText = cfg.priceFormatted + ' USD (Paid in Full)';
-                const fullStreet = suite ? `${address}, ${suite}` : address;
-
-                document.getElementById('confCustomerName').textContent = fullName || 'Valued Customer';
-                const confPkgEl = document.getElementById('confPackageName');
-                if (confPkgEl) confPkgEl.textContent = cfg.confPackage;
-                document.getElementById('confOrderRef').textContent = randomRef;
-                document.getElementById('confWarrantyStatus').textContent = 'ACTIVE (Registered to ID: ••••' + idLast4 + ')';
-                document.getElementById('confAmountPaid').textContent = amountText;
-                document.getElementById('confShipAddress').textContent = `${fullStreet}, ${city}, ${state} ${zip}, ${country}`;
-                document.getElementById('confEmailSent').textContent = email;
-
-                // Show modal
-                document.getElementById('confirmationModal').classList.add('active');
-            }, 1200);
+            }
         }
 
         // Close Confirmation

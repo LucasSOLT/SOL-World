@@ -200,8 +200,8 @@ h1 { font-family: 'Plus Jakarta Sans', sans-serif !important; font-weight: 500 !
 
         <h1>Showcase Position Secured!</h1>
         <p class="subtitle">
-            Your payment of <strong>$3,995 USD</strong> has been successfully processed
-            through Authorize.net. Your SOL REViBE Business-in-a-Box Station order is confirmed.
+            Your payment of <strong id="paidAmountText">$3,995 USD</strong> has been successfully processed
+            through Stripe. Your <span id="paidProductSubtitle">SOL REViBE Business-in-a-Box Station</span> order is confirmed.
         </p>
 
         <div class="detail-box" id="detailBox">
@@ -215,18 +215,18 @@ h1 { font-family: 'Plus Jakarta Sans', sans-serif !important; font-weight: 500 !
             </div>
             <div class="detail-row">
                 <span class="detail-label">Amount</span>
-                <span class="detail-value" style="font-family:inherit">$3,995.00 USD</span>
+                <span class="detail-value" id="detailAmountVal" style="font-family:inherit">$3,995.00 USD</span>
             </div>
             <div class="detail-row">
                 <span class="detail-label">Product</span>
-                <span class="detail-value" style="font-family:inherit;font-size:0.85rem;">SOL REViBE Business-in-a-Box</span>
+                <span class="detail-value" id="detailProductVal" style="font-family:inherit;font-size:0.85rem;">SOL REViBE Business-in-a-Box</span>
             </div>
         </div>
 
         <div class="next-steps">
             <h3>What Happens Next</h3>
             <ul>
-                <li>A confirmation email will be sent to you from Authorize.net.</li>
+                <li>A confirmation receipt email will be sent to you via Stripe.</li>
                 <li>Our team will reach out within 1 business day to schedule your onboarding.</li>
                 <li>Your showcase zone will be marked as reserved on the SOL REViBE map.</li>
                 <li>You will receive your Station setup guide and access credentials.</li>
@@ -237,18 +237,33 @@ h1 { font-family: 'Plus Jakarta Sans', sans-serif !important; font-weight: 500 !
 
         <p class="tx-note">
             Questions? Contact us at support@solrevibe.com &nbsp;|&nbsp;
-            Processed securely via Authorize.net
+            Processed securely via Stripe
         </p>
     </div>
 
     <script>
-        // Show transaction ID if present in URL query string
+        // Show transaction ID / verify Stripe PaymentIntent if present in URL query string
         (function() {
             var params = new URLSearchParams(window.location.search);
-            var txid = params.get('txid');
+            var txid = params.get('payment_intent') || params.get('txid');
             if (txid) {
                 document.getElementById('txId').textContent = txid;
                 document.getElementById('txRow').style.display = 'flex';
+            }
+            if (txid && txid.indexOf('pi_') === 0) {
+                fetch('/api/verify-payment-intent?payment_intent=' + encodeURIComponent(txid))
+                    .then(function(r) { return r.ok ? r.json() : null; })
+                    .then(function(data) {
+                        if (!data || typeof data.amount !== 'number') return;
+                        var formatted = '$' + (data.amount / 100).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' USD';
+                        document.getElementById('paidAmountText').textContent = formatted;
+                        document.getElementById('detailAmountVal').textContent = formatted;
+                        if (data.metadata && data.metadata.package_name) {
+                            document.getElementById('paidProductSubtitle').textContent = data.metadata.package_name;
+                            document.getElementById('detailProductVal').textContent = data.metadata.package_name;
+                        }
+                    })
+                    .catch(function() {});
             }
         })();
     </script>
