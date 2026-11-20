@@ -263,7 +263,7 @@ a{color:inherit}
   position:relative;
   border-radius:20px;
   border:1px solid var(--line);
-  background:linear-gradient(120deg,#FCF9F3 0%,#F7F2E7 58%,#F3ECE0 100%);
+  background:#FBF4E5;
   overflow:hidden;
   min-height:224px;
   display:flex;
@@ -279,7 +279,17 @@ a{color:inherit}
   inset:0;
   width:100%;
   height:100%;
+  object-fit:cover;
+  object-position:center;
   pointer-events:none;
+}
+.featured-hero::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(90deg,rgba(251,244,229,.88) 0%,rgba(251,244,229,.35) 34%,rgba(251,244,229,0) 56%,rgba(251,244,229,.68) 100%);
+  pointer-events:none;
+  z-index:1;
 }
 .fh-left{
   position:relative;
@@ -2460,22 +2470,7 @@ html.is-tablet .modal .m-box.survey-mode {
     const v = videos.find(x => x.featured) || videos[0];
     if (!v) { featuredEl.innerHTML = ""; return; }
     featuredEl.innerHTML = `
-      <svg class="hero-waves" viewBox="0 0 1100 260" preserveAspectRatio="none" aria-hidden="true">
-        <defs>
-          <linearGradient id="hwWarm" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stop-color="#D7BE9B" stop-opacity=".55"/><stop offset="1" stop-color="#BFA17B" stop-opacity=".28"/></linearGradient>
-          <linearGradient id="hwSage" x1="0" x2="1"><stop offset="0" stop-color="#9CB09E" stop-opacity=".46"/><stop offset="1" stop-color="#768879" stop-opacity=".22"/></linearGradient>
-          <linearGradient id="hwSlate" x1="0" x2="1"><stop offset="0" stop-color="#788894" stop-opacity=".38"/><stop offset="1" stop-color="#5B6973" stop-opacity=".22"/></linearGradient>
-        </defs>
-        <path d="M210 260 C 310 175, 420 65, 560 72 C 700 79, 815 215, 985 160 C 1045 140, 1080 105, 1110 85 L 1110 260 Z" fill="url(#hwSage)"/>
-        <path d="M295 260 C 405 140, 505 22, 650 56 C 790 90, 865 245, 1055 182 C 1085 172, 1100 158, 1110 148" stroke="#6E7C86" stroke-width="26" fill="none" opacity=".32"/>
-        <path d="M350 260 C 445 145, 535 45, 675 74 C 815 104, 885 235, 1070 165" stroke="#CDB089" stroke-width="22" fill="none" opacity=".48"/>
-        <circle cx="578" cy="112" r="96" stroke="#859586" stroke-width="11" fill="none" opacity=".24"/>
-        <circle cx="578" cy="112" r="74" stroke="#C6A77D" stroke-width="10" fill="none" opacity=".35"/>
-        <circle cx="578" cy="112" r="52" stroke="#4D4841" stroke-width="9" fill="none" opacity=".38"/>
-        <circle cx="578" cy="112" r="30" stroke="#7E9180" stroke-width="7" fill="none" opacity=".35"/>
-        <path d="M445 0 C 515 72, 610 85, 695 36 C 745 8, 770 0, 790 0" stroke="url(#hwWarm)" stroke-width="28" fill="none"/>
-        <path d="M625 260 C 700 178, 800 150, 915 198 C 985 228, 1045 232, 1110 202" stroke="url(#hwSlate)" stroke-width="20" fill="none"/>
-      </svg>
+      <img class="hero-waves" src="../assets/tag-header-design.jpg?v=20261120" alt="" aria-hidden="true">
       <div class="fh-left">
         <div class="fh-eyebrow">FEATURED EXPERIENCE</div>
         <h1 class="fh-title">Welcome to<span class="fh-brand">SOL REViBE</span></h1>
