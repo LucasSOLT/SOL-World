@@ -25,7 +25,9 @@
 <meta name="twitter:image:alt" content="SOL REViBE Therapeutic Audio Guides (TAGs) page with the featured Customer Instructional Video">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://player.vimeo.com">
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://player.vimeo.com/api/player.js" defer></script>
 <style>
 :root{
   --bg:#EDE6DB; --panel:rgba(247,245,241,.85); --line:rgba(107,122,130,.35); --line-soft:rgba(43,43,43,.1);
@@ -273,7 +275,8 @@ footer b { color: #2B2926 !important; }
 .close:hover { background: #C29B68 !important; color: #fff; }
 :focus-visible { outline-color: #C29B68 !important; }
 /* Auto-pause "Play Again" overlay (shown over the video at each step break) */
-.resume-overlay { position: absolute; inset: 0; z-index: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; background: rgba(30,26,22,.42); opacity: 0; visibility: hidden; transition: opacity .25s ease, visibility .25s ease; }
+.resume-overlay { position: absolute; inset: 0; z-index: 2; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; background: rgba(30,26,22,.42); opacity: 0; visibility: hidden; transition: opacity .25s ease, visibility .25s ease; }
+.resume-overlay.end-cover { background: linear-gradient(160deg, rgba(32,28,24,.97) 0%, rgba(20,18,15,.98) 100%); backdrop-filter: blur(8px); }
 .resume-overlay.show { opacity: 1; visibility: visible; }
 .resume-btn { display: inline-flex; align-items: center; gap: 10px; padding: 16px 34px; border: 0; border-radius: 999px; background: linear-gradient(90deg, #7F9283 0%, #C29B68 100%); color: #fff; font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; font-size: 1.05rem; letter-spacing: .02em; cursor: pointer; box-shadow: 0 10px 30px rgba(0,0,0,.35); transform: scale(.94); transition: transform .25s ease, filter .2s ease; }
 .resume-overlay.show .resume-btn { transform: none; animation: resumePulse 2.2s ease-in-out infinite; }
@@ -337,6 +340,1070 @@ html.is-tablet .m-info h2 { font-size: 1.02rem !important; }
 html.is-tablet .m-info p { font-size: .82rem !important; margin-top: 0 !important; }
 html.is-tablet .close { top: 10px !important; right: 10px !important; width: 44px !important; height: 44px !important; }
 html.is-tablet .exit-hint { top: 62px !important; right: 10px !important; }
+
+/* ===== Categories -> Collections -> Series -> Episodes Hierarchy & Audio Speaker UI ===== */
+.toolbar-controls { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.sort { min-width: 155px; }
+.grid-structured { display: flex !important; flex-direction: column !important; gap: 26px !important; }
+.series-group { display: flex; flex-direction: column; gap: 12px; }
+.series-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 0 2px 8px;
+  border-bottom: 1px solid #E2DDD2;
+}
+.series-crumbs {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex-wrap: wrap;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: .82rem;
+  color: #6B665E;
+}
+.series-crumbs .col-label {
+  font-weight: 700;
+  color: #2B2926;
+  font-size: .95rem;
+}
+.series-crumbs .sep { color: #B8B0A2; font-weight: 600; }
+.series-crumbs .ser-label { font-weight: 600; color: #7F9283; }
+.series-count {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: .72rem;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: #8C857B;
+  background: #F8F5EF;
+  border: 1px solid #E6E1D7;
+  padding: 4px 10px;
+  border-radius: 999px;
+}
+.series-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 285px));
+  gap: 16px;
+}
+.card { max-width: 285px !important; }
+.card-top-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.ep-pill {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: .64rem;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: #6E6A63;
+  background: #EFEBE3;
+  padding: 2px 7px;
+  border-radius: 6px;
+  white-space: nowrap;
+}
+.card-hier {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: .71rem;
+  font-weight: 600;
+  color: #7F9283;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Upper-left speaker icon for audio-only items */
+.audio-speaker-btn {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 4;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  background: rgba(34, 31, 27, 0.72);
+  color: #FFFFFF;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  transition: transform .18s ease, background .2s ease, border-color .2s ease, box-shadow .2s ease;
+}
+.audio-speaker-btn:hover {
+  transform: scale(1.08);
+  background: rgba(34, 31, 27, 0.9);
+  border-color: #C29B68;
+}
+.audio-speaker-btn.is-playing {
+  background: linear-gradient(135deg, #7F9283, #C29B68);
+  border-color: #FFFFFF;
+  box-shadow: 0 0 0 3px rgba(194, 155, 104, 0.4);
+  animation: speakerPulse 1.8s ease-in-out infinite;
+}
+.audio-speaker-btn svg { width: 15px; height: 15px; }
+@keyframes speakerPulse {
+  0%, 100% { box-shadow: 0 0 0 2px rgba(194, 155, 104, 0.45); }
+  50% { box-shadow: 0 0 0 6px rgba(194, 155, 104, 0); }
+}
+
+/* Subtle "Coming Soon" pill on upcoming cards */
+.soon-badge {
+  position: absolute;
+  left: 8px;
+  bottom: 8px;
+  z-index: 2;
+  background: rgba(248, 245, 239, 0.92);
+  color: #8C6430;
+  border: 1px solid #E3D3B8;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: .64rem;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+/* Coming Soon Pop-Up Modal */
+.cs-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 110;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(243, 240, 234, 0.84);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity .22s ease, visibility .22s ease;
+}
+.cs-modal.open { opacity: 1; visibility: visible; }
+.cs-box {
+  position: relative;
+  width: min(500px, 100%);
+  background: #F8F5EF;
+  border: 1px solid #E6E1D7;
+  border-radius: 22px;
+  overflow: hidden;
+  box-shadow: 0 24px 68px rgba(70, 58, 44, 0.25);
+  transform: scale(.96);
+  transition: transform .22s ease;
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+}
+.cs-modal.open .cs-box { transform: none; }
+.cs-thumb {
+  position: relative;
+  aspect-ratio: 16/9;
+  background: #EFEBE3;
+  overflow: hidden;
+}
+.cs-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.cs-pill {
+  position: absolute;
+  left: 16px;
+  bottom: 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: rgba(248, 245, 239, 0.95);
+  border: 1px solid #E3D3B8;
+  color: #8C6430;
+  font-size: .72rem;
+  font-weight: 800;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+.cs-body { padding: 22px 26px 24px; text-align: left; }
+.cs-crumbs {
+  font-size: .74rem;
+  font-weight: 700;
+  color: #7F9283;
+  letter-spacing: .03em;
+  margin-bottom: 6px;
+}
+.cs-body h2 { font-size: 1.32rem; font-weight: 700; color: #2B2926; margin-bottom: 8px; }
+.cs-body p { font-size: .92rem; color: #55524D; line-height: 1.55; margin-bottom: 14px; }
+.cs-note {
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: #FBF9F5;
+  border: 1px solid #E6E1D7;
+  font-size: .84rem;
+  color: #4A4640;
+  margin-bottom: 18px;
+}
+.cs-note strong { color: #B88E5A; }
+.cs-actions { display: flex; justify-content: flex-end; }
+.cs-btn {
+  padding: 10px 24px;
+  border: 0;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #7F9283 0%, #C29B68 100%);
+  color: #fff;
+  font-weight: 700;
+  font-size: .9rem;
+  cursor: pointer;
+}
+@media (max-width: 900px) {
+  .series-cards { grid-template-columns: repeat(auto-fill, minmax(240px, 320px)); }
+}
+@media (max-width: 600px) {
+  .series-cards { grid-template-columns: 1fr; }
+  .toolbar-controls { width: 100%; }
+  .toolbar-controls .sort { flex: 1 1 calc(50% - 5px); min-width: 0; }
+}
+
+/* ===== Post-Session Thought Loop Clearing Check-In UI ===== */
+.m-info { gap: 14px; flex-wrap: wrap; }
+.m-checkin-trigger {
+  display: none;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 18px;
+  border-radius: 999px;
+  border: 1px solid #D9C7A6;
+  background: #FBF7EE;
+  color: #8C6838;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: .82rem;
+  font-weight: 700;
+  letter-spacing: .01em;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background .2s ease, transform .2s ease, box-shadow .2s ease;
+}
+.m-checkin-trigger.visible { display: inline-flex; }
+.m-checkin-trigger:hover { background: #F5ECDC; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(194,155,104,.22); }
+.m-checkin-trigger svg { width: 15px; height: 15px; color: #C29B68; }
+@media (max-width: 600px) {
+  .m-checkin-trigger { width: 100%; justify-content: center; padding: 10px 18px; margin-top: 4px; }
+}
+
+/* Gentle Post-Session Invitation Popup (appears slowly before the survey) */
+.m-box.invite-mode > .m-info .m-checkin-trigger { display: none !important; }
+@media (max-width: 640px) {
+  .m-box.invite-mode > .player {
+    aspect-ratio: auto !important;
+    min-height: 410px !important;
+  }
+  .m-box.invite-mode > .player > iframe {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+}
+.tlc-invite-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: radial-gradient(circle at 50% 38%, rgba(44, 39, 33, 0.85) 0%, rgba(24, 21, 18, 0.94) 100%);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 1.15s cubic-bezier(0.22, 1, 0.36, 1), visibility 1.15s ease;
+}
+.tlc-invite-overlay.show {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+.tlc-invite-overlay.fading-out {
+  opacity: 0 !important;
+  pointer-events: none !important;
+  transition: opacity .45s ease !important;
+}
+.tlc-invite-card {
+  width: 100%;
+  max-width: 452px;
+  padding: 26px 28px 22px;
+  border-radius: 22px;
+  background: #F8F5EF;
+  border: 1px solid #E5DFD3;
+  box-shadow: 0 24px 64px rgba(18, 15, 11, 0.42), inset 0 1px 0 rgba(255, 255, 255, 0.75);
+  text-align: center;
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  color: #3A3630;
+  opacity: 0;
+  transform: translateY(14px) scale(0.982);
+  transition: opacity 1.65s cubic-bezier(0.16, 1, 0.3, 1) 0.22s, transform 1.65s cubic-bezier(0.16, 1, 0.3, 1) 0.22s;
+}
+.tlc-invite-overlay.show .tlc-invite-card {
+  opacity: 1;
+  transform: none;
+}
+.tlc-invite-overlay.fading-out .tlc-invite-card {
+  opacity: 0;
+  transform: translateY(-6px) scale(0.99);
+  transition: opacity .4s ease, transform .4s ease;
+}
+.tlc-invite-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  margin-bottom: 14px;
+  border-radius: 999px;
+  background: #EEF1EC;
+  border: 1px solid #DCE3D9;
+  color: #657869;
+  font-size: .68rem;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+.tlc-invite-eyebrow::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #7F9283;
+}
+.tlc-invite-msg {
+  font-size: .93rem;
+  line-height: 1.68;
+  color: #3E3A34;
+  font-weight: 400;
+  margin: 0 auto 12px;
+}
+.tlc-invite-cta-lead {
+  font-size: .88rem;
+  line-height: 1.5;
+  color: #5D564C;
+  font-weight: 600;
+  margin: 0 auto 10px;
+}
+.tlc-invite-arrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  margin: 0 auto 12px;
+  border-radius: 50%;
+  background: #F3ECE0;
+  border: 1px solid #E5D7BF;
+  color: #B28954;
+  animation: tlcArrowFloat 2.6s ease-in-out infinite;
+}
+.tlc-invite-arrow svg {
+  width: 15px;
+  height: 15px;
+}
+@keyframes tlcArrowFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(4px); }
+}
+.tlc-invite-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+.tlc-begin-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-width: 188px;
+  padding: 13px 34px;
+  border: 0;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #7F9283 0%, #C29B68 100%);
+  color: #fff;
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  font-size: .95rem;
+  font-weight: 700;
+  letter-spacing: .02em;
+  cursor: pointer;
+  box-shadow: 0 10px 26px rgba(127, 146, 131, 0.28);
+  transition: transform .22s ease, filter .22s ease, box-shadow .22s ease;
+}
+.tlc-begin-btn:hover {
+  filter: brightness(1.05);
+  transform: translateY(-1px);
+  box-shadow: 0 12px 30px rgba(194, 155, 104, 0.34);
+}
+.tlc-invite-skip {
+  border: 0;
+  background: transparent;
+  color: #8A8379;
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  font-size: .78rem;
+  font-weight: 600;
+  padding: 4px 10px;
+  cursor: pointer;
+  transition: color .18s ease;
+}
+.tlc-invite-skip:hover { color: #4A453E; }
+@media (max-width: 640px) {
+  .m-box.invite-mode > .player { min-height: 430px !important; }
+  .tlc-invite-overlay { padding: 20px 16px; }
+  .tlc-invite-card { padding: 22px 20px 18px; border-radius: 18px; }
+  .tlc-invite-msg { font-size: .87rem; line-height: 1.6; }
+  .tlc-invite-cta-lead { font-size: .83rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tlc-invite-overlay, .tlc-invite-card { transition-duration: .2s !important; transition-delay: 0s !important; }
+  .tlc-invite-arrow { animation: none; }
+}
+
+html .modal .m-box.survey-mode,
+html.is-tablet .modal .m-box.survey-mode {
+  width: min(700px, calc(100vw - 24px)) !important;
+  max-width: 700px !important;
+  max-height: calc(100vh - 28px) !important;
+  max-height: calc(100dvh - 28px) !important;
+  border-radius: 24px !important;
+  background: #F8F5EF !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+  box-shadow: 0 28px 80px rgba(45, 36, 26, 0.32), 0 2px 10px rgba(45, 36, 26, 0.08) !important;
+}
+.m-box.survey-mode > .player,
+.m-box.survey-mode > .m-info,
+.m-box.survey-mode > .close,
+.m-box.survey-mode > .exit-hint {
+  display: none !important;
+}
+
+.tlc-survey {
+  display: none;
+  flex-direction: column;
+  width: 100%;
+  max-height: calc(100vh - 28px);
+  max-height: calc(100dvh - 28px);
+  background: #F8F5EF;
+  color: #2B2926;
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  animation: tlcFadeIn 1.2s cubic-bezier(.16, 1, .3, 1) both;
+}
+.m-box.survey-mode .tlc-survey { display: flex; }
+@keyframes tlcFadeIn {
+  from { opacity: 0; transform: translateY(12px) scale(.99); }
+  to { opacity: 1; transform: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tlc-survey { animation-duration: .2s; }
+}
+
+.tlc-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 20px;
+  background: rgba(248, 245, 239, 0.95);
+  border-bottom: 1px solid #EAE4D9;
+  flex-shrink: 0;
+}
+.tlc-replay-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: #6B665E;
+  font-size: .8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: color .18s ease, background .18s ease, border-color .18s ease;
+}
+.tlc-replay-link:hover {
+  color: #2B2926;
+  background: #EFEAE0;
+  border-color: #E2DBD0;
+}
+.tlc-replay-link svg { width: 14px; height: 14px; }
+.tlc-skip-top {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  border: 1px solid #E2DBD0;
+  background: #FBF9F5;
+  color: #55524D;
+  font-size: .8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background .18s ease, color .18s ease, border-color .18s ease;
+}
+.tlc-skip-top:hover {
+  background: #EFEAE0;
+  color: #2B2926;
+  border-color: #CFC7B8;
+}
+
+.tlc-survey [hidden] { display: none !important; }
+
+.tlc-scroll {
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  padding: 22px 28px 26px;
+  flex: 1 1 auto;
+  scrollbar-width: thin;
+  scrollbar-color: #D5CEC0 transparent;
+}
+.tlc-scroll::-webkit-scrollbar { width: 7px; }
+.tlc-scroll::-webkit-scrollbar-track { background: transparent; }
+.tlc-scroll::-webkit-scrollbar-thumb { background: #D5CEC0; border-radius: 999px; }
+.tlc-scroll::-webkit-scrollbar-thumb:hover { background: #BFB6A5; }
+
+.tlc-header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+.tlc-logo {
+  display: block;
+  width: min(350px, 84%);
+  height: auto;
+  margin: 0 auto 8px;
+}
+.tlc-subtitle {
+  font-size: .9rem;
+  color: #6B665E;
+  line-height: 1.45;
+}
+
+.tlc-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.tlc-card {
+  background: #FBF9F5;
+  border: 1px solid #E6E1D7;
+  border-radius: 16px;
+  padding: 16px 18px;
+  box-shadow: 0 2px 10px rgba(70, 58, 44, 0.03);
+  transition: border-color .2s ease, box-shadow .2s ease;
+}
+.tlc-card.needs-attn {
+  border-color: #C29B68;
+  box-shadow: 0 0 0 3px rgba(194, 155, 104, 0.18);
+}
+
+.tlc-q-label {
+  display: block;
+  font-size: .95rem;
+  font-weight: 700;
+  color: #2B2926;
+  line-height: 1.35;
+  margin-bottom: 11px;
+}
+.tlc-q-num {
+  color: #4A443F;
+  margin-right: 3px;
+}
+.tlc-opt {
+  font-weight: 500;
+  font-style: italic;
+  color: #878178;
+  font-size: .86rem;
+}
+
+.tlc-scale-box {
+  background: #FFFFFF;
+  border: 1px solid #EAE4D9;
+  border-radius: 12px;
+  padding: 13px 12px 10px;
+}
+.tlc-scale-row {
+  display: grid;
+  grid-template-columns: repeat(10, minmax(0, 1fr));
+  gap: 6px;
+}
+.tlc-num-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 7px 2px 6px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  background: transparent;
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform .15s ease, background .15s ease;
+}
+.tlc-num-btn:hover {
+  background: #F7F3EB;
+  transform: translateY(-1px);
+}
+.tlc-num-box {
+  width: 28px;
+  height: 28px;
+  border-radius: 7px;
+  border: 1.6px solid #B5B0A6;
+  background: #FFFFFF;
+  display: grid;
+  place-items: center;
+  transition: all .18s cubic-bezier(.22,1,.36,1);
+  color: transparent;
+}
+.tlc-num-box svg {
+  width: 15px;
+  height: 15px;
+  transform: scale(.5);
+  opacity: 0;
+  transition: transform .18s cubic-bezier(.22,1,.36,1), opacity .15s ease;
+}
+.tlc-num-digit {
+  font-size: .82rem;
+  font-weight: 600;
+  color: #4A4640;
+  line-height: 1;
+  transition: color .15s ease, font-weight .15s ease;
+}
+
+/* Selected states: warm amber-gold for Opening, calm sage for Ending */
+.tlc-scale-open .tlc-num-btn[aria-checked="true"] {
+  background: rgba(194, 155, 104, 0.13);
+}
+.tlc-scale-open .tlc-num-btn[aria-checked="true"] .tlc-num-box {
+  background: #C29B68;
+  border-color: #B08650;
+  color: #FFFFFF;
+  transform: scale(1.07);
+  box-shadow: 0 4px 12px rgba(194, 155, 104, 0.38);
+}
+.tlc-scale-open .tlc-num-btn[aria-checked="true"] .tlc-num-digit {
+  color: #8C6430;
+  font-weight: 800;
+}
+
+.tlc-scale-end .tlc-num-btn[aria-checked="true"] {
+  background: rgba(127, 146, 131, 0.15);
+}
+.tlc-scale-end .tlc-num-btn[aria-checked="true"] .tlc-num-box {
+  background: #7F9283;
+  border-color: #6B7E6F;
+  color: #FFFFFF;
+  transform: scale(1.07);
+  box-shadow: 0 4px 12px rgba(127, 146, 131, 0.38);
+}
+.tlc-scale-end .tlc-num-btn[aria-checked="true"] .tlc-num-digit {
+  color: #4E6152;
+  font-weight: 800;
+}
+.tlc-num-btn[aria-checked="true"] .tlc-num-box svg {
+  transform: scale(1);
+  opacity: 1;
+}
+
+.tlc-scale-anchors {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 8px;
+  padding: 6px 4px 0;
+  border-top: 1px dashed #ECE6DC;
+  font-size: .74rem;
+  line-height: 1.3;
+  color: #6E6960;
+}
+.tlc-anchor { max-width: 46%; }
+.tlc-anchor b { color: #3D3934; font-weight: 700; }
+.tlc-anchor-max { text-align: right; }
+
+/* Auto-Calculated Distance + Interactive Encourager */
+.tlc-distance-body {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.tlc-dist-badge {
+  flex: 0 0 auto;
+  min-width: 88px;
+  min-height: 64px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: #FFFFFF;
+  border: 1.5px solid #D9D2C5;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  transition: all .28s cubic-bezier(.22,1,.36,1);
+}
+.tlc-distance-card.active {
+  background: linear-gradient(135deg, #FBF9F4 0%, #F3F6F2 100%);
+  border-color: #CFD8CE;
+}
+.tlc-distance-card.active .tlc-dist-badge {
+  border-color: #7F9283;
+  background: #FFFFFF;
+  box-shadow: 0 6px 18px rgba(127, 146, 131, 0.20);
+  animation: tlcBadgePop .34s cubic-bezier(.22,1,.36,1);
+}
+@keyframes tlcBadgePop {
+  0% { transform: scale(.88); }
+  60% { transform: scale(1.06); }
+  100% { transform: scale(1); }
+}
+.tlc-dist-num {
+  font-size: 1.55rem;
+  font-weight: 800;
+  line-height: 1.05;
+  color: #9A948A;
+  letter-spacing: -.02em;
+}
+.tlc-distance-card.active .tlc-dist-num {
+  color: #4D6252;
+}
+.tlc-dist-unit {
+  font-size: .66rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: #8A847A;
+  margin-top: 2px;
+}
+.tlc-distance-card.active .tlc-dist-unit {
+  color: #7F9283;
+}
+
+.tlc-encourager {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.tlc-enc-title {
+  font-size: .93rem;
+  font-weight: 700;
+  color: #5C574F;
+  line-height: 1.3;
+}
+.tlc-distance-card.active .tlc-enc-title {
+  color: #2B2926;
+}
+.tlc-enc-text {
+  font-size: .83rem;
+  color: #6B665E;
+  line-height: 1.45;
+  margin-top: 3px;
+}
+.tlc-shift-track {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 9px;
+}
+.tlc-shift-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: #EAEFE9;
+  color: #495E4E;
+  font-size: .73rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.tlc-shift-bar {
+  flex: 1;
+  height: 6px;
+  border-radius: 999px;
+  background: #E7E2D8;
+  overflow: hidden;
+  position: relative;
+}
+.tlc-shift-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #C29B68 0%, #7F9283 100%);
+  width: 0%;
+  transition: width .45s cubic-bezier(.22,1,.36,1);
+}
+
+/* Optional Questions 4 & 5 + Voice / Talk-to-Text */
+.tlc-open-q {
+  padding: 4px 2px 0;
+}
+.tlc-open-q .tlc-q-label {
+  margin-bottom: 4px;
+}
+.tlc-helper {
+  font-size: .82rem;
+  color: #756F66;
+  margin-bottom: 8px;
+}
+.tlc-field-wrap {
+  background: #FFFFFF;
+  border: 1.5px dashed #CFC8BA;
+  border-radius: 14px;
+  padding: 10px 12px;
+  transition: border-color .2s ease, box-shadow .2s ease, border-style .2s ease;
+}
+.tlc-field-wrap:focus-within {
+  border-style: solid;
+  border-color: #C29B68;
+  box-shadow: 0 0 0 3px rgba(194, 155, 104, 0.15);
+}
+.tlc-textarea {
+  width: 100%;
+  border: 0;
+  outline: none;
+  resize: vertical;
+  background: transparent;
+  color: #2B2926;
+  font: inherit;
+  font-size: .92rem;
+  line-height: 1.5;
+  min-height: 62px;
+}
+.tlc-textarea-compact {
+  min-height: 44px;
+}
+.tlc-textarea::placeholder {
+  color: #9A9388;
+}
+.tlc-voice-bar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding-top: 8px;
+  margin-top: 6px;
+  border-top: 1px solid #F0ECE4;
+}
+.tlc-vbtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid #E0D9CC;
+  background: #F8F5EF;
+  color: #46423C;
+  font-size: .77rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all .18s ease;
+}
+.tlc-vbtn:hover {
+  background: #F1EBE0;
+  border-color: #C9BFA9;
+}
+.tlc-vbtn svg {
+  width: 14px;
+  height: 14px;
+  flex: none;
+}
+.tlc-vbtn.active {
+  background: #B8564B;
+  border-color: #A3453B;
+  color: #FFFFFF;
+  animation: tlcMicPulse 1.5s ease-in-out infinite;
+}
+@keyframes tlcMicPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(184, 86, 75, 0.45); }
+  50% { box-shadow: 0 0 0 7px rgba(184, 86, 75, 0); }
+}
+.tlc-voice-status {
+  font-size: .75rem;
+  color: #7A736A;
+  font-weight: 500;
+}
+.tlc-audio-pill {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 9px;
+  padding: 7px 10px;
+  border-radius: 10px;
+  background: #F4F1EA;
+  border: 1px solid #E3DDD1;
+}
+.tlc-audio-pill[hidden] { display: none !important; }
+.tlc-audio-pill audio {
+  height: 32px;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.tlc-audio-remove {
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid #D8D0C2;
+  background: #FFFFFF;
+  color: #6B645B;
+  font-size: .73rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.tlc-audio-remove:hover {
+  background: #FCECE9;
+  border-color: #E0B4AD;
+  color: #9E3F35;
+}
+
+.tlc-form-err {
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: #FDF1EE;
+  border: 1px solid #E8C0B7;
+  color: #8F392E;
+  font-size: .84rem;
+  font-weight: 600;
+}
+.tlc-form-err[hidden] { display: none !important; }
+
+.tlc-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-top: 6px;
+  padding-top: 14px;
+  border-top: 1px solid #E8E2D7;
+}
+.tlc-brand-mark {
+  font-size: .74rem;
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: #8D867C;
+}
+.tlc-footer-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-left: auto;
+}
+.tlc-btn-skip {
+  padding: 11px 18px;
+  border-radius: 999px;
+  border: 1px solid #DCD5C7;
+  background: transparent;
+  color: #5E5951;
+  font-weight: 600;
+  font-size: .88rem;
+  cursor: pointer;
+  transition: background .18s ease, color .18s ease;
+}
+.tlc-btn-skip:hover {
+  background: #ECE7DC;
+  color: #2B2926;
+}
+.tlc-btn-submit {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 28px;
+  border-radius: 999px;
+  border: 0;
+  background: linear-gradient(90deg, #7F9283 0%, #C29B68 100%);
+  color: #FFFFFF;
+  font-weight: 700;
+  font-size: .94rem;
+  cursor: pointer;
+  box-shadow: 0 6px 20px rgba(150, 130, 100, 0.30);
+  transition: filter .2s ease, transform .2s ease, box-shadow .2s ease;
+}
+.tlc-btn-submit:hover {
+  filter: brightness(1.05);
+  transform: translateY(-1px);
+  box-shadow: 0 10px 24px rgba(150, 130, 100, 0.38);
+}
+.tlc-btn-submit:disabled {
+  opacity: .68;
+  cursor: wait;
+  transform: none;
+}
+
+/* Thank-you confirmation view */
+.tlc-done {
+  text-align: center;
+  padding: 26px 12px 18px;
+  animation: tlcFadeIn .35s ease both;
+}
+.tlc-done[hidden] { display: none !important; }
+.tlc-done-icon {
+  width: 60px;
+  height: 60px;
+  margin: 0 auto 14px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(127,146,131,.2), rgba(194,155,104,.22));
+  border: 1.5px solid #7F9283;
+  color: #556B59;
+  display: grid;
+  place-items: center;
+}
+.tlc-done-icon svg { width: 28px; height: 28px; }
+.tlc-done h3 {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #2B2926;
+  margin-bottom: 6px;
+}
+.tlc-done-summary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 16px;
+  margin: 8px 0 12px;
+  border-radius: 999px;
+  background: #EDF1EC;
+  border: 1px solid #CFD9CE;
+  color: #445948;
+  font-size: .86rem;
+  font-weight: 700;
+}
+.tlc-done p {
+  max-width: 440px;
+  margin: 0 auto 22px;
+  color: #5E5952;
+  font-size: .94rem;
+  line-height: 1.55;
+}
+
+@media (max-width: 600px) {
+  html .modal .m-box.survey-mode {
+    width: calc(100vw - 14px) !important;
+    max-height: calc(100dvh - 16px) !important;
+    border-radius: 18px !important;
+  }
+  .tlc-topbar { padding: 10px 14px; }
+  .tlc-scroll { padding: 16px 14px 20px; }
+  .tlc-card { padding: 13px 12px; }
+  .tlc-scale-box { padding: 10px 6px 8px; }
+  .tlc-scale-row { gap: 3px; }
+  .tlc-num-btn { padding: 5px 1px; gap: 5px; }
+  .tlc-num-box { width: 24px; height: 24px; border-radius: 6px; }
+  .tlc-num-digit { font-size: .76rem; }
+  .tlc-distance-body { flex-direction: column; align-items: stretch; gap: 10px; }
+  .tlc-dist-badge { flex-direction: row; gap: 8px; min-height: 48px; justify-content: center; }
+  .tlc-dist-unit { margin-top: 0; }
+  .tlc-footer-actions { width: 100%; justify-content: flex-end; }
+}
 </style>
 </head>
 <body>
@@ -347,7 +1414,7 @@ html.is-tablet .exit-hint { top: 62px !important; right: 10px !important; }
     <a class="logo" href="../index.html" aria-label="SOL REViBE home"><img src="../assets/SOL_REViBE_New_Logo.png?v=20261107" alt="SOL REViBE"></a>
     <div class="links">
       <a href="#" class="active" aria-current="page">Explore</a>
-      <a href="#">Collections</a>
+      <a href="#library-organizers">Collections</a>
     </div>
     <div class="search" role="search">
       <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
@@ -366,20 +1433,30 @@ html.is-tablet .exit-hint { top: 62px !important; right: 10px !important; }
 
   <section class="featured" id="featured" aria-label="Featured video"></section>
 
-  <div class="toolbar">
+  <div class="toolbar" id="library-organizers">
     <div class="chips" id="chips" role="group" aria-label="Filter by category"></div>
-    <label class="sr-only" for="sort">Sort videos</label>
-    <select class="sort" id="sort">
-      <option value="recent">Sort: Recently Added</option>
-      <option value="views">Sort: Most Viewed</option>
-      <option value="title">Sort: Title A–Z</option>
-    </select>
+    <div class="toolbar-controls">
+      <label class="sr-only" for="collectionSel">Filter by collection</label>
+      <select class="sort" id="collectionSel" aria-label="Filter by collection">
+        <option value="All">Collection: All</option>
+      </select>
+      <label class="sr-only" for="seriesSel">Filter by series</label>
+      <select class="sort" id="seriesSel" aria-label="Filter by series">
+        <option value="All">Series: All</option>
+      </select>
+      <label class="sr-only" for="sort">Sort videos</label>
+      <select class="sort" id="sort">
+        <option value="recent">Sort: Recently Added</option>
+        <option value="views">Sort: Most Viewed</option>
+        <option value="title">Sort: Title A–Z</option>
+      </select>
+    </div>
   </div>
 
   <div class="layout">
     <aside class="side" id="side" aria-label="Browse"></aside>
     <main>
-      <section class="grid" id="grid" aria-label="Videos"></section>
+      <section class="grid grid-structured" id="grid" aria-label="Videos"></section>
       <section class="empty" id="empty" aria-live="polite">
         <h2>No videos found matching your query</h2>
         <p>Try a different keyword, category or view.</p>
@@ -391,16 +1468,185 @@ html.is-tablet .exit-hint { top: 62px !important; right: 10px !important; }
 </div>
 
 <div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="m-title" aria-hidden="true">
-  <div class="m-box">
+  <div class="m-box" id="mBox">
     <button class="close" id="close" type="button" aria-label="Close video"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
     <div class="exit-hint" id="exitHint" role="status" aria-live="polite" aria-hidden="true"><strong>Finished watching?</strong>Click the &ldquo;<span class="x-chip" aria-hidden="true">&#10005;</span><span class="sr-only">X</span>&rdquo; button here to return to the main page and continue.</div>
     <div class="player"><iframe id="player" title="Vimeo video player" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
       <div class="resume-overlay" id="resumeOverlay" aria-hidden="true">
-        <button type="button" class="resume-btn" id="resumeBtn"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 4.5v15l13-7.5z"/></svg>Play Again</button>
+        <button type="button" class="resume-btn" id="resumeBtn"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 4.5v15l13-7.5z"/></svg><span id="resumeBtnLabel">Play Again</span></button>
         <span class="resume-note" id="resumeNote" aria-live="polite"></span>
       </div>
+      <div class="tlc-invite-overlay" id="tlcInviteOverlay" aria-hidden="true">
+        <div class="tlc-invite-card" role="region" aria-label="Post-session reflection">
+          <div class="tlc-invite-eyebrow">Session Complete</div>
+          <p class="tlc-invite-msg">We truly hope you feel renewed, centered, and inspired to take your experience farther than just this moment. What we learn in these moments of reflection can be life-changing, so we urge you to take that knowledge into your day.</p>
+          <p class="tlc-invite-cta-lead">We recommend you start by clicking this button</p>
+          <div class="tlc-invite-arrow" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M6 13l6 6 6-6"/></svg>
+          </div>
+          <div class="tlc-invite-actions">
+            <button type="button" class="tlc-begin-btn" id="tlcBeginBtn">Let&rsquo;s begin</button>
+            <button type="button" class="tlc-invite-skip" id="tlcInviteSkipBtn">Not now</button>
+          </div>
+        </div>
+      </div>
     </div>
-    <div class="m-info"><div><h2 id="m-title"></h2><p id="m-desc"></p></div></div>
+    <div class="m-info">
+      <div><h2 id="m-title"></h2><p id="m-desc"></p></div>
+      <button type="button" class="m-checkin-trigger" id="mCheckinTrigger">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+        Post-Session Check-In
+      </button>
+    </div>
+
+    <!-- End-of-Session Interactive Survey (TAG 1 - Thought Loop Clearing ONLY) -->
+    <div class="tlc-survey" id="tlcSurvey" aria-hidden="true">
+      <div class="tlc-topbar">
+        <button type="button" class="tlc-replay-link" id="tlcReplayBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>
+          Replay video
+        </button>
+        <button type="button" class="tlc-skip-top" id="tlcSkipTopBtn" aria-label="Skip check-in and close">Not now <span aria-hidden="true">&#10005;</span></button>
+      </div>
+      <div class="tlc-scroll" id="tlcScroll">
+        <div class="tlc-header">
+          <img src="../assets/thought-loop-clearing-logo.png" alt="Thought Loop Clearing" class="tlc-logo">
+          <p class="tlc-subtitle" id="tlcSubtitle">Take a quiet moment while your session is fresh to notice what shifted.</p>
+        </div>
+
+        <form class="tlc-form" id="tlcForm" novalidate>
+          <!-- 1. Opening Number -->
+          <div class="tlc-card" id="tlcCardOpen">
+            <div class="tlc-q-label" id="tlcOpenLbl"><span class="tlc-q-num">1.</span> What was your opening number on a scale of 1 to 10?</div>
+            <div class="tlc-scale-box">
+              <div class="tlc-scale-row tlc-scale-open" id="tlcOpenScale" role="radiogroup" aria-labelledby="tlcOpenLbl"></div>
+              <div class="tlc-scale-anchors">
+                <span class="tlc-anchor tlc-anchor-min"><b>1</b> &middot; <span data-tlc-min-label>Barely noticeable friction</span></span>
+                <span class="tlc-anchor tlc-anchor-max"><b>10</b> &middot; <span data-tlc-max-label>Overwhelming</span></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 2. Ending Number -->
+          <div class="tlc-card" id="tlcCardEnd">
+            <div class="tlc-q-label" id="tlcEndLbl"><span class="tlc-q-num">2.</span> What was your ending number?</div>
+            <div class="tlc-scale-box">
+              <div class="tlc-scale-row tlc-scale-end" id="tlcEndScale" role="radiogroup" aria-labelledby="tlcEndLbl"></div>
+              <div class="tlc-scale-anchors">
+                <span class="tlc-anchor tlc-anchor-min"><b>1</b> &middot; <span data-tlc-min-label>Barely noticeable friction</span></span>
+                <span class="tlc-anchor tlc-anchor-max"><b>10</b> &middot; <span data-tlc-max-label>Overwhelming</span></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 3. Auto-Calculated Distance + Interactive Encourager -->
+          <div class="tlc-card tlc-distance-card" id="tlcDistanceCard" aria-live="polite">
+            <div class="tlc-q-label"><span class="tlc-q-num">3.</span> What was the distance between the two numbers?</div>
+            <div class="tlc-distance-body">
+              <div class="tlc-dist-badge" id="tlcDistBadge">
+                <span class="tlc-dist-num" id="tlcDistNum">&mdash;</span>
+                <span class="tlc-dist-unit" id="tlcDistUnit">points</span>
+              </div>
+              <div class="tlc-encourager">
+                <div class="tlc-enc-title" id="tlcEncTitle">Tap both numbers above to see your shift</div>
+                <p class="tlc-enc-text" id="tlcEncText">Your opening-to-ending progress calculates automatically as soon as you select both ratings.</p>
+                <div class="tlc-shift-track" id="tlcShiftTrack" hidden>
+                  <span class="tlc-shift-pill" id="tlcShiftPill"></span>
+                  <div class="tlc-shift-bar" aria-hidden="true"><div class="tlc-shift-fill" id="tlcShiftFill"></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 4. What did the thought loop look like? (Optional) -->
+          <div class="tlc-open-q">
+            <label class="tlc-q-label" for="tlcLookInput"><span class="tlc-q-num">4.</span> What did the thought loop look like? <span class="tlc-opt">(Optional)</span></label>
+            <p class="tlc-helper">For example: color, shape, size, texture, etc.</p>
+            <div class="tlc-field-wrap">
+              <textarea class="tlc-textarea" id="tlcLookInput" rows="3" placeholder="Speak with Talk-to-Text, leave a quick Voice Note, or type here…"></textarea>
+              <div class="tlc-voice-bar">
+                <button type="button" class="tlc-vbtn" id="tlcLookDictateBtn" data-dictate="look">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="2" width="6" height="11" rx="3"/><path d="M5 10a7 7 0 0 0 14 0M12 17v5M8 22h8"/></svg>
+                  <span class="tlc-vbtn-lbl">Talk to Text</span>
+                </button>
+                <button type="button" class="tlc-vbtn" id="tlcLookRecordBtn" data-record="look">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 10v4M8 7v10M12 4v16M16 7v10M20 10v4"/></svg>
+                  <span class="tlc-vbtn-lbl">Voice Note</span>
+                </button>
+                <span class="tlc-voice-status" id="tlcLookStatus" aria-live="polite"></span>
+              </div>
+              <div class="tlc-audio-pill" id="tlcLookAudioPill" hidden>
+                <audio id="tlcLookAudio" controls preload="metadata"></audio>
+                <button type="button" class="tlc-audio-remove" data-clear-audio="look">Remove</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- 5. Where was it in your body? (Optional) -->
+          <div class="tlc-open-q">
+            <label class="tlc-q-label" for="tlcBodyInput"><span class="tlc-q-num">5.</span> Where was it in your body? <span class="tlc-opt">(Optional)</span></label>
+            <div class="tlc-field-wrap">
+              <textarea class="tlc-textarea tlc-textarea-compact" id="tlcBodyInput" rows="2" placeholder="Speak with Talk-to-Text, leave a Voice Note, or type (e.g., chest, shoulders, behind the eyes)…"></textarea>
+              <div class="tlc-voice-bar">
+                <button type="button" class="tlc-vbtn" id="tlcBodyDictateBtn" data-dictate="body">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="2" width="6" height="11" rx="3"/><path d="M5 10a7 7 0 0 0 14 0M12 17v5M8 22h8"/></svg>
+                  <span class="tlc-vbtn-lbl">Talk to Text</span>
+                </button>
+                <button type="button" class="tlc-vbtn" id="tlcBodyRecordBtn" data-record="body">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 10v4M8 7v10M12 4v16M16 7v10M20 10v4"/></svg>
+                  <span class="tlc-vbtn-lbl">Voice Note</span>
+                </button>
+                <span class="tlc-voice-status" id="tlcBodyStatus" aria-live="polite"></span>
+              </div>
+              <div class="tlc-audio-pill" id="tlcBodyAudioPill" hidden>
+                <audio id="tlcBodyAudio" controls preload="metadata"></audio>
+                <button type="button" class="tlc-audio-remove" data-clear-audio="body">Remove</button>
+              </div>
+            </div>
+          </div>
+
+          <p class="tlc-form-err" id="tlcFormErr" role="alert" hidden></p>
+
+          <div class="tlc-footer">
+            <span class="tlc-brand-mark">SOL REViBE</span>
+            <div class="tlc-footer-actions">
+              <button type="button" class="tlc-btn-skip" id="tlcSkipBottomBtn">Not now</button>
+              <button type="submit" class="tlc-btn-submit" id="tlcSubmitBtn">Complete Check-In</button>
+            </div>
+          </div>
+        </form>
+
+        <div class="tlc-done" id="tlcDoneView" hidden>
+          <div class="tlc-done-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5L20 7"/></svg>
+          </div>
+          <h3>Check-In Saved</h3>
+          <div class="tlc-done-summary" id="tlcDoneSummary"></div>
+          <p id="tlcDoneText">Thank you for sharing your reflection. Take a deep breath and carry this clarity into the rest of your day.</p>
+          <button type="button" class="tlc-btn-submit" id="tlcDoneCloseBtn">Return to Audio Guides</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Coming Soon Modal for upcoming mock episodes -->
+<div class="cs-modal" id="comingSoonModal" role="dialog" aria-modal="true" aria-labelledby="csTitle" aria-hidden="true">
+  <div class="cs-box">
+    <button class="close" id="csClose" type="button" aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+    <div class="cs-thumb">
+      <img id="csImg" src="" alt="">
+      <span class="cs-pill">Coming Soon</span>
+    </div>
+    <div class="cs-body">
+      <div class="cs-crumbs" id="csCrumbs"></div>
+      <h2 id="csTitle">Coming Soon</h2>
+      <p id="csDesc"></p>
+      <div class="cs-note"><strong>Coming Soon:</strong> This session is in final mastering and will be available to stream shortly.</div>
+      <div class="cs-actions">
+        <button type="button" class="cs-btn" id="csDoneBtn">Got It</button>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -412,7 +1658,17 @@ html.is-tablet .exit-hint { top: 62px !important; right: 10px !important; }
     (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
   if (isTabletDevice()) document.documentElement.classList.add("is-tablet");
 
-  const CATS = ["All", "TAGs"];
+  // ---- Thought Loop Clearing Post-Session Survey Configuration ----
+  const TLC_CONFIG = {
+    scaleMinLabel: "Barely noticeable friction",
+    scaleMaxLabel: "Overwhelming",
+    // Optional direct Google Apps Script Web App URL (or configure TLC_GOOGLE_SHEETS_WEBAPP_URL in Vercel env vars):
+    googleSheetsWebAppUrl: "",
+    apiEndpoint: "../api/session-reflection",
+    maxVoiceSeconds: 90
+  };
+
+  const CATS = ["All", "TAGs", "Guided Resets", "Sleep & Recovery", "Energy & Focus"];
   const VIEWS = [
     {k:"all", label:"Browse All", ic:'<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>'},
     {k:"featured", label:"Featured", ic:'<path d="m12 3 2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/>'},
@@ -420,13 +1676,16 @@ html.is-tablet .exit-hint { top: 62px !important; right: 10px !important; }
     {k:"viewed", label:"Most Watched", ic:'<path d="M5 20V10M12 20V4M19 20v-7"/>'},
     {k:"saved", label:"Saved Videos", ic:'<path d="M6 3h12v18l-6-4-6 4z"/>'}
   ];
-  // days = days since published; views in raw number
+  // Structured hierarchy: Categories -> Collections -> Series -> Episodes
   const videos = [
     {
       id: 1,
       vimeoId: "1240033068",
       title: "Customer Instructional Video",
       category: "Video",
+      collection: "Getting Started",
+      series: "Station Onboarding",
+      episode: 1,
       duration: "04:47",
       days: 1,
       views: 24,
@@ -444,10 +1703,14 @@ html.is-tablet .exit-hint { top: 62px !important; right: 10px !important; }
       vimeoId: "1245793823",
       title: "TAG 1 - Thought Loop Clearing",
       category: "TAGs",
+      collection: "Core Reset Protocols",
+      series: "Thought Loop Series",
+      episode: 1,
       duration: "15:01",
       days: 1,
       views: 12,
       featured: false,
+      endSurvey: "thought-loop", // ONLY this session opens the Thought Loop Clearing check-in at completion
       hue: [210, 280],
       tags: ["tag", "tags", "thought loop", "clearing", "relaxation"],
       thumb: "https://i.vimeocdn.com/video/2225226848-d5e96fb7165271dd0bc3b40051b7eea6411da29a0ca53a3a35d18a3742968550-d_640x360",
@@ -458,6 +1721,9 @@ html.is-tablet .exit-hint { top: 62px !important; right: 10px !important; }
       vimeoId: "1245985622",
       title: "Rigging Future Echoes",
       category: "TAGs",
+      collection: "The Law of Action",
+      series: "Frequency & Mindset Series",
+      episode: 1,
       duration: "10:49",
       days: 1,
       views: 0,
@@ -466,12 +1732,131 @@ html.is-tablet .exit-hint { top: 62px !important; right: 10px !important; }
       tags: ["tag", "tags", "rigging future echoes", "rigging future echos", "the law of action", "theo wilson", "jason mcbride"],
       thumb: "https://i.vimeocdn.com/video/2225445654-e1b279bc44a1729d2ca83b8a577e94946f5c3dcaad10513c2e84f0406ca39852-d_640x360",
       description: "In Your Favor — featuring Theo Wilson & Jason McBride (The Law of Action Series)."
+    },
+    {
+      id: 4,
+      vimeoId: "",
+      comingSoon: true,
+      audioOnly: true,
+      audioSrc: "../assets/Audio for Joy.MP3",
+      title: "Calming the Racing Mind",
+      category: "TAGs",
+      collection: "Core Reset Protocols",
+      series: "Thought Loop Series",
+      episode: 2,
+      duration: "14:20",
+      days: 2,
+      views: 0,
+      featured: false,
+      hue: [160, 42],
+      tags: ["tag", "tags", "audio only", "calming", "racing mind", "thought loop"],
+      thumb: "../assets/tag-thumb-calming-mind.jpg",
+      description: "Audio-only guided frequency session to release mental chatter and anchor into steady calm."
+    },
+    {
+      id: 5,
+      vimeoId: "",
+      comingSoon: true,
+      audioOnly: true,
+      audioSrc: "../assets/Audio for Joy.MP3",
+      title: "Momentum Over Friction",
+      category: "TAGs",
+      collection: "The Law of Action",
+      series: "Frequency & Mindset Series",
+      episode: 2,
+      duration: "11:35",
+      days: 2,
+      views: 0,
+      featured: false,
+      hue: [40, 190],
+      tags: ["tag", "tags", "audio only", "theo wilson", "jason mcbride", "the law of action", "momentum"],
+      thumb: "../assets/tag-thumb-momentum-action.jpg",
+      description: "Audio-only follow-up with Theo Wilson & Jason McBride on turning subconscious resistance into daily action."
+    },
+    {
+      id: 6,
+      vimeoId: "",
+      comingSoon: true,
+      audioOnly: false,
+      title: "Vagal Tone & Heart Coherence",
+      category: "Guided Resets",
+      collection: "Nervous System Sanctuary",
+      series: "Breath & Coherence Series",
+      episode: 1,
+      duration: "16:10",
+      days: 3,
+      views: 0,
+      featured: false,
+      hue: [140, 45],
+      tags: ["guided resets", "vagal", "breathwork", "nervous system", "coherence"],
+      thumb: "../assets/tag-thumb-vagal-coherence.jpg",
+      description: "Guided parasympathetic pacing paired with resonant acoustic harmonics for nervous system balance."
+    },
+    {
+      id: 7,
+      vimeoId: "",
+      comingSoon: true,
+      audioOnly: true,
+      audioSrc: "../assets/Audio for Joy.MP3",
+      title: "Evening Unwind & Somatic Release",
+      category: "Guided Resets",
+      collection: "Nervous System Sanctuary",
+      series: "Breath & Coherence Series",
+      episode: 2,
+      duration: "19:05",
+      days: 3,
+      views: 0,
+      featured: false,
+      hue: [38, 145],
+      tags: ["guided resets", "audio only", "somatic", "evening", "relaxation"],
+      thumb: "../assets/tag-thumb-somatic-release.jpg",
+      description: "Audio-only gentle body scan and low-frequency tone sweep to melt away accumulated tension."
+    },
+    {
+      id: 8,
+      vimeoId: "",
+      comingSoon: true,
+      audioOnly: false,
+      title: "Deep Delta Nightfall",
+      category: "Sleep & Recovery",
+      collection: "Restorative Night Rituals",
+      series: "Delta Recovery Series",
+      episode: 1,
+      duration: "22:30",
+      days: 4,
+      views: 0,
+      featured: false,
+      hue: [210, 45],
+      tags: ["sleep", "recovery", "delta", "nightfall", "rest"],
+      thumb: "../assets/tag-thumb-delta-nightfall.jpg",
+      description: "Slow delta-wave soundscape crafted to transition mind and body into uninterrupted restorative sleep."
+    },
+    {
+      id: 9,
+      vimeoId: "",
+      comingSoon: true,
+      audioOnly: false,
+      title: "Morning Clarity & Cellular Spark",
+      category: "Energy & Focus",
+      collection: "Daily Vitality Rituals",
+      series: "Peak Morning Series",
+      episode: 1,
+      duration: "12:15",
+      days: 4,
+      views: 0,
+      featured: false,
+      hue: [42, 130],
+      tags: ["energy", "focus", "morning", "clarity", "vitality"],
+      thumb: "../assets/tag-thumb-morning-vitality.jpg",
+      description: "Uplifting harmonic entrainment designed to sharpen mental clarity and awaken natural daily energy."
     }
   ];
 
   const $ = id => document.getElementById(id);
   const grid=$("grid"), empty=$("empty"), search=$("search"), clearBtn=$("clear"), chips=$("chips"),
-        side=$("side"), sortSel=$("sort"), modal=$("modal"), player=$("player"), featuredEl=$("featured");
+        side=$("side"), sortSel=$("sort"), collectionSel=$("collectionSel"), seriesSel=$("seriesSel"),
+        modal=$("modal"), mBox=$("mBox"), player=$("player"), featuredEl=$("featured"),
+        comingSoonModal=$("comingSoonModal");
   const saved = new Set(JSON.parse(localStorage.getItem("sol-saved") || "[]"));
   const viewCounts = JSON.parse(localStorage.getItem("sol-views") || "{}");
   videos.forEach(v => {
@@ -512,14 +1897,51 @@ html.is-tablet .exit-hint { top: 62px !important; right: 10px !important; }
     render();
   }
 
-  const state = {query:"", cat:"All", view:"all", sort:"recent"};
+  const state = {query:"", cat:"All", collection:"All", series:"All", view:"all", sort:"recent"};
   let lastFocus = null;
+  let activeVideo = null;
+  let playingAudioId = null;
+  const directAudio = new Audio();
+  directAudio.preload = "none";
 
   const esc = s => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
   const svg = (p, extra="") => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" ${extra}>${p}</svg>`;
   const ago = d => d < 14 ? `${d} days ago` : d < 30 ? `${Math.round(d/7)} weeks ago` : `${Math.round(d/30)} month${Math.round(d/30)>1?"s":""} ago`;
   const fmtViews = n => n >= 1000 ? (n/1000).toFixed(1)+"K views" : n+" views";
   const PLAY = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 4.5v15l13-7.5z"/></svg>';
+  const SPEAKER_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>';
+
+  function syncSpeakerButtons(){
+    document.querySelectorAll(".audio-speaker-btn").forEach(btn => {
+      const on = +btn.dataset.audioId === playingAudioId && !directAudio.paused;
+      btn.classList.toggle("is-playing", on);
+      btn.setAttribute("aria-pressed", on ? "true" : "false");
+    });
+  }
+
+  function stopDirectAudio(){
+    directAudio.pause();
+    playingAudioId = null;
+    syncSpeakerButtons();
+  }
+
+  function toggleDirectAudio(v){
+    if (!v || !v.audioSrc) return;
+    if (playingAudioId === v.id && !directAudio.paused) {
+      stopDirectAudio();
+      return;
+    }
+    if (playingAudioId !== v.id) {
+      directAudio.src = v.audioSrc;
+    }
+    playingAudioId = v.id;
+    directAudio.play().then(syncSpeakerButtons).catch(() => {
+      playingAudioId = null;
+      syncSpeakerButtons();
+    });
+  }
+
+  directAudio.addEventListener("ended", stopDirectAudio);
 
   // Procedural wave artwork or thumbnail
   function art(v){
@@ -558,9 +1980,22 @@ html.is-tablet .exit-hint { top: 62px !important; right: 10px !important; }
       </div>`;
   }
 
+  function renderOrganizerSelects(){
+    const visible = videos.filter(v => !v.hideFromGrid && (state.cat==="All" || v.category===state.cat || (state.cat==="TAGs" && (/tag/i.test(v.category) || (v.tags && v.tags.some(t => /tag/i.test(t)))))));
+    const collections = ["All", ...new Set(visible.map(v => v.collection).filter(Boolean))];
+    if (!collections.includes(state.collection)) state.collection = "All";
+    collectionSel.innerHTML = collections.map(c => `<option value="${esc(c)}"${c===state.collection?" selected":""}>Collection: ${esc(c)}</option>`).join("");
+
+    const seriesPool = state.collection === "All" ? visible : visible.filter(v => v.collection === state.collection);
+    const seriesList = ["All", ...new Set(seriesPool.map(v => v.series).filter(Boolean))];
+    if (!seriesList.includes(state.series)) state.series = "All";
+    seriesSel.innerHTML = seriesList.map(s => `<option value="${esc(s)}"${s===state.series?" selected":""}>Series: ${esc(s)}</option>`).join("");
+  }
+
   function renderNav(){
-    chips.innerHTML = CATS.map(c => `<button type="button" class="chip" data-cat="${esc(c)}" aria-pressed="${c===state.cat}">${c==="All"?"All Videos":esc(c)}</button>`).join("");
+    chips.innerHTML = CATS.map(c => `<button type="button" class="chip" data-cat="${esc(c)}" aria-pressed="${c===state.cat}">${c==="All"?"All Categories":esc(c)}</button>`).join("");
     side.innerHTML = VIEWS.map(v => `<button type="button" data-view="${v.k}" aria-pressed="${v.k===state.view}">${svg(v.ic)}${v.label}</button>`).join("");
+    renderOrganizerSelects();
   }
 
   function list(){
@@ -568,44 +2003,701 @@ html.is-tablet .exit-hint { top: 62px !important; right: 10px !important; }
     let out = videos.filter(v =>
       !v.hideFromGrid &&
       (state.cat==="All" || v.category===state.cat || (state.cat==="TAGs" && (/tag/i.test(v.category) || (v.tags && v.tags.some(t => /tag/i.test(t)))))) &&
+      (state.collection==="All" || v.collection===state.collection) &&
+      (state.series==="All" || v.series===state.series) &&
       (state.view!=="featured" || v.featured) &&
       (state.view!=="saved" || saved.has(v.id)) &&
-      (!q || [v.title, v.category, v.description, ...v.tags].join(" ").toLowerCase().includes(q)));
+      (!q || [v.title, v.category, v.collection, v.series, `Episode ${v.episode || ""}`, v.description, ...(v.tags || [])].join(" ").toLowerCase().includes(q)));
     const s = state.view==="recent" ? "recent" : state.view==="viewed" ? "views" : state.sort;
-    out.sort((a,b) => s==="recent" ? a.days-b.days : s==="views" ? b.views-a.views : a.title.localeCompare(b.title));
+    out.sort((a,b) => s==="recent" ? (a.days-b.days || (a.episode||1)-(b.episode||1)) : s==="views" ? b.views-a.views : a.title.localeCompare(b.title));
     return out;
   }
 
-  function render(){
-    const items = list();
-    grid.innerHTML = items.map((v,i) => `
-      <article class="card" tabindex="0" role="button" data-id="${v.id}" style="animation-delay:${i*45}ms" aria-label="Play ${esc(v.title)}">
+  function cardHtml(v, i){
+    const isPlayingAudio = v.audioOnly && playingAudioId === v.id && !directAudio.paused;
+    const epBadge = v.episode ? `<span class="ep-pill">Episode ${v.episode}</span>` : "";
+    const speakerBtn = v.audioOnly
+      ? `<button type="button" class="audio-speaker-btn ${isPlayingAudio?"is-playing":""}" data-audio-id="${v.id}" aria-label="Play audio track for ${esc(v.title)}" aria-pressed="${isPlayingAudio?"true":"false"}" title="Play MP3 directly">${SPEAKER_SVG}</button>`
+      : "";
+    const soonTag = v.comingSoon ? `<span class="soon-badge">Coming Soon</span>` : "";
+    return `
+      <article class="card" tabindex="0" role="button" data-id="${v.id}" style="animation-delay:${i*40}ms" aria-label="${v.comingSoon?"Preview details for ":"Play "}${esc(v.title)}">
         <div class="thumb">
           ${art(v)}
+          ${speakerBtn}
           <span class="playbtn">${PLAY}</span>
+          ${soonTag}
           <span class="dur">${v.duration}</span>
           <button type="button" class="save ${saved.has(v.id)?"on":""}" data-save="${v.id}" aria-label="${saved.has(v.id)?"Remove from":"Add to"} saved videos" aria-pressed="${saved.has(v.id)}">${svg('<path d="M6 3h12v18l-6-4-6 4z"/>')}</button>
         </div>
         <div class="c-body">
-          <span class="cat" data-cat="${esc(v.category)}">${esc(v.category)}</span>
+          <div class="card-top-meta">
+            <span class="cat" data-cat="${esc(v.category)}">${esc(v.category)}</span>
+            ${epBadge}
+          </div>
           <h3>${esc(v.title)}</h3>
+          <div class="card-hier">${esc(v.collection || "")}${v.series ? " › " + esc(v.series) : ""}</div>
           <p class="c-desc">${esc(v.description)}</p>
           <div class="c-meta"><span>${svg('<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>')}${ago(v.days)}</span><span>${svg('<path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>')}${fmtViews(v.views)}</span></div>
         </div>
-      </article>`).join("");
+      </article>`;
+  }
+
+  function render(){
+    const items = list();
+    const groups = [];
+    const groupMap = new Map();
+    items.forEach(v => {
+      const col = v.collection || "SOL REViBE Library";
+      const ser = v.series || "Sessions";
+      const key = `${col}|||${ser}`;
+      if (!groupMap.has(key)) {
+        const g = { collection: col, series: ser, items: [] };
+        groupMap.set(key, g);
+        groups.push(g);
+      }
+      groupMap.get(key).items.push(v);
+    });
+
+    let idx = 0;
+    grid.innerHTML = groups.map(g => {
+      const eps = g.items.slice().sort((a, b) => (a.episode || 99) - (b.episode || 99));
+      const cardsHtml = eps.map(v => cardHtml(v, idx++)).join("");
+      return `
+        <section class="series-group" aria-label="${esc(g.collection)} - ${esc(g.series)}">
+          <div class="series-head">
+            <div class="series-crumbs">
+              <span class="col-label">${esc(g.collection)}</span>
+              <span class="sep" aria-hidden="true">›</span>
+              <span class="ser-label">${esc(g.series)}</span>
+            </div>
+            <span class="series-count">${eps.length} ${eps.length===1?"Episode":"Episodes"}</span>
+          </div>
+          <div class="series-cards">${cardsHtml}</div>
+        </section>`;
+    }).join("");
+
     empty.classList.toggle("show", items.length===0);
     grid.hidden = items.length===0;
     clearBtn.classList.toggle("visible", !!state.query);
+    syncSpeakerButtons();
   }
 
   const update = () => { renderNav(); render(); };
 
-  // ---- Auto-pause points (e.g. between instructional steps) via the Vimeo player postMessage API ----
+  // =========================================================================
+  // Thought Loop Clearing — Interactive Post-Session Check-In + Voice Engine
+  // =========================================================================
+  const tlcSurvey = $("tlcSurvey"), tlcForm = $("tlcForm"), tlcDoneView = $("tlcDoneView"),
+        tlcOpenScale = $("tlcOpenScale"), tlcEndScale = $("tlcEndScale"),
+        tlcCardOpen = $("tlcCardOpen"), tlcCardEnd = $("tlcCardEnd"),
+        tlcDistanceCard = $("tlcDistanceCard"), tlcDistNum = $("tlcDistNum"), tlcDistUnit = $("tlcDistUnit"),
+        tlcEncTitle = $("tlcEncTitle"), tlcEncText = $("tlcEncText"),
+        tlcShiftTrack = $("tlcShiftTrack"), tlcShiftPill = $("tlcShiftPill"), tlcShiftFill = $("tlcShiftFill"),
+        tlcLookInput = $("tlcLookInput"), tlcBodyInput = $("tlcBodyInput"),
+        tlcFormErr = $("tlcFormErr"), tlcSubmitBtn = $("tlcSubmitBtn"),
+        mCheckinTrigger = $("mCheckinTrigger");
+
+  document.querySelectorAll("[data-tlc-min-label]").forEach(el => { el.textContent = TLC_CONFIG.scaleMinLabel; });
+  document.querySelectorAll("[data-tlc-max-label]").forEach(el => { el.textContent = TLC_CONFIG.scaleMaxLabel; });
+
+  const CHECK_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5L20 7"/></svg>';
+  function buildScaleButtons(container, kind){
+    let html = "";
+    for (let n = 1; n <= 10; n++) {
+      html += `<button type="button" class="tlc-num-btn" role="radio" aria-checked="false" data-scale="${kind}" data-val="${n}" aria-label="${n}${n===1?" ("+esc(TLC_CONFIG.scaleMinLabel)+")":n===10?" ("+esc(TLC_CONFIG.scaleMaxLabel)+")":""}">
+        <span class="tlc-num-box">${CHECK_SVG}</span>
+        <span class="tlc-num-digit">${n}</span>
+      </button>`;
+    }
+    container.innerHTML = html;
+  }
+  buildScaleButtons(tlcOpenScale, "open");
+  buildScaleButtons(tlcEndScale, "end");
+
+  const tlcState = {
+    openNum: null,
+    endNum: null,
+    submitted: false,
+    voice: {
+      look: { dataUrl: "", durationSec: 0 },
+      body: { dataUrl: "", durationSec: 0 }
+    }
+  };
+
+  function getEncourager(openNum, endNum){
+    const drop = openNum - endNum;
+    const abs = Math.abs(drop);
+    if (endNum === 1 && drop >= 1) {
+      return {
+        badge: String(drop),
+        unit: drop === 1 ? "pt drop" : "pt drop",
+        pill: `${openNum} → 1 · Cleared`,
+        fillPct: 100,
+        title: "Cleared all the way down to a 1!",
+        text: `Dropping ${drop} ${drop === 1 ? "point" : "points"} straight down to barely noticeable friction is an awesome release. Notice how light your mind feels right now.`
+      };
+    }
+    if (drop >= 5) {
+      return {
+        badge: String(drop),
+        unit: "pt drop",
+        pill: `${openNum} → ${endNum} · -${drop} pts`,
+        fillPct: Math.min(100, Math.round((drop / 9) * 100) + 20),
+        title: "That's extraordinary progress!",
+        text: `Releasing ${drop} points (${openNum} down to ${endNum}) in a single session is a major shift — your nervous system really let go of that loop.`
+      };
+    }
+    if (drop >= 3) {
+      return {
+        badge: String(drop),
+        unit: "pt drop",
+        pill: `${openNum} → ${endNum} · -${drop} pts`,
+        fillPct: Math.min(95, Math.round((drop / 9) * 100) + 22),
+        title: "That's excellent progress!",
+        text: `A ${drop}-point drop (${openNum} down to ${endNum}) shows real space and calm opening up in both your mind and body.`
+      };
+    }
+    if (drop >= 1) {
+      return {
+        badge: String(drop),
+        unit: drop === 1 ? "pt drop" : "pt drop",
+        pill: `${openNum} → ${endNum} · -${drop} ${drop === 1 ? "pt" : "pts"}`,
+        fillPct: Math.max(30, Math.round((drop / 9) * 100) + 22),
+        title: "Great shift — the loop is unwinding!",
+        text: `Moving down ${drop} ${drop === 1 ? "point" : "points"} (${openNum} to ${endNum}) means the friction has already started loosening its hold.`
+      };
+    }
+    if (drop === 0) {
+      return {
+        badge: "0",
+        unit: "change",
+        pill: `${openNum} → ${endNum} · Steady`,
+        fillPct: endNum <= 2 ? 90 : 35,
+        title: endNum <= 2 ? "Grounded in calm clarity!" : "Awareness is the first step of clearing.",
+        text: endNum <= 2
+          ? `Staying steady at ${endNum} shows a peaceful, low-friction baseline.`
+          : `Simply noticing and naming the loop at ${endNum} starts unwinding it — shifts often continue settling after your session.`
+      };
+    }
+    return {
+      badge: String(abs),
+      unit: "pt shift",
+      pill: `${openNum} → ${endNum} · +${abs} surfaced`,
+      fillPct: 28,
+      title: "Thank you for tuning in honestly.",
+      text: `Sometimes slowing down brings underlying tension into clearer focus first (${openNum} to ${endNum}). Take a slow breath — awareness lets it release.`
+    };
+  }
+
+  function renderScaleSelection(container, selectedVal){
+    container.querySelectorAll(".tlc-num-btn").forEach(btn => {
+      const on = +btn.dataset.val === selectedVal;
+      btn.setAttribute("aria-checked", on ? "true" : "false");
+    });
+  }
+
+  function updateDistanceUI(){
+    const o = tlcState.openNum, e = tlcState.endNum;
+    if (o === null || e === null) {
+      tlcDistanceCard.classList.remove("active");
+      tlcDistNum.textContent = "—";
+      tlcDistUnit.textContent = "points";
+      tlcEncTitle.textContent = o !== null
+        ? "Now tap your ending number (#2) above"
+        : e !== null
+          ? "Now tap your opening number (#1) above"
+          : "Tap both numbers above to see your shift";
+      tlcEncText.textContent = "Your opening-to-ending progress calculates automatically as soon as you select both ratings.";
+      tlcShiftTrack.hidden = true;
+      tlcShiftFill.style.width = "0%";
+      return;
+    }
+    const enc = getEncourager(o, e);
+    tlcDistanceCard.classList.remove("active");
+    void tlcDistanceCard.offsetWidth; // retrigger pop animation on value change
+    tlcDistanceCard.classList.add("active");
+    tlcDistNum.textContent = enc.badge;
+    tlcDistUnit.textContent = enc.unit;
+    tlcEncTitle.textContent = enc.title;
+    tlcEncText.textContent = enc.text;
+    tlcShiftPill.textContent = enc.pill;
+    tlcShiftTrack.hidden = false;
+    requestAnimationFrame(() => { tlcShiftFill.style.width = enc.fillPct + "%"; });
+  }
+
+  function selectScaleNumber(kind, val){
+    if (kind === "open") {
+      tlcState.openNum = val;
+      tlcCardOpen.classList.remove("needs-attn");
+      renderScaleSelection(tlcOpenScale, val);
+    } else {
+      tlcState.endNum = val;
+      tlcCardEnd.classList.remove("needs-attn");
+      renderScaleSelection(tlcEndScale, val);
+    }
+    tlcFormErr.hidden = true;
+    updateDistanceUI();
+  }
+
+  [tlcOpenScale, tlcEndScale].forEach(scaleEl => {
+    scaleEl.addEventListener("click", e => {
+      const btn = e.target.closest(".tlc-num-btn");
+      if (!btn) return;
+      selectScaleNumber(btn.dataset.scale, +btn.dataset.val);
+    });
+    scaleEl.addEventListener("keydown", e => {
+      const btn = e.target.closest(".tlc-num-btn");
+      if (!btn) return;
+      let v = +btn.dataset.val;
+      if (e.key === "ArrowRight" || e.key === "ArrowUp") v = Math.min(10, v + 1);
+      else if (e.key === "ArrowLeft" || e.key === "ArrowDown") v = Math.max(1, v - 1);
+      else return;
+      e.preventDefault();
+      const next = scaleEl.querySelector(`[data-val="${v}"]`);
+      if (next) { next.focus(); selectScaleNumber(btn.dataset.scale, v); }
+    });
+  });
+
+  // ---- Talk-to-Text (Web Speech API) & Voice Note Recorder (MediaRecorder) ----
+  const voiceEngine = {
+    recognition: null,
+    dictateField: null,
+    recorder: null,
+    recordStream: null,
+    recordField: null,
+    recordChunks: [],
+    recordTimer: null,
+    recordSec: 0,
+    stopPromiseResolve: null
+  };
+
+  const fieldDom = key => ({
+    input: key === "look" ? tlcLookInput : tlcBodyInput,
+    dictateBtn: key === "look" ? $("tlcLookDictateBtn") : $("tlcBodyDictateBtn"),
+    recordBtn: key === "look" ? $("tlcLookRecordBtn") : $("tlcBodyRecordBtn"),
+    status: key === "look" ? $("tlcLookStatus") : $("tlcBodyStatus"),
+    pill: key === "look" ? $("tlcLookAudioPill") : $("tlcBodyAudioPill"),
+    audio: key === "look" ? $("tlcLookAudio") : $("tlcBodyAudio")
+  });
+
+  const fmtSec = s => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
+
+  function stopDictation(){
+    if (voiceEngine.dictateField) {
+      const dom = fieldDom(voiceEngine.dictateField);
+      dom.dictateBtn.classList.remove("active");
+      dom.dictateBtn.querySelector(".tlc-vbtn-lbl").textContent = "Talk to Text";
+      if (dom.status.textContent.startsWith("Listening")) dom.status.textContent = "";
+    }
+    voiceEngine.dictateField = null;
+    if (voiceEngine.recognition) {
+      const rec = voiceEngine.recognition;
+      voiceEngine.recognition = null;
+      try { rec.onend = null; rec.stop(); } catch (_) {}
+    }
+  }
+
+  function stopRecording(){
+    if (voiceEngine.recordTimer) {
+      clearInterval(voiceEngine.recordTimer);
+      voiceEngine.recordTimer = null;
+    }
+    if (!voiceEngine.recorder || voiceEngine.recorder.state === "inactive") {
+      if (voiceEngine.recordStream) {
+        voiceEngine.recordStream.getTracks().forEach(t => t.stop());
+        voiceEngine.recordStream = null;
+      }
+      return Promise.resolve();
+    }
+    return new Promise(resolve => {
+      voiceEngine.stopPromiseResolve = resolve;
+      try { voiceEngine.recorder.stop(); } catch (_) { resolve(); }
+    });
+  }
+
+  async function stopAllVoice(){
+    stopDictation();
+    await stopRecording();
+  }
+
+  function toggleDictation(fieldKey){
+    if (voiceEngine.dictateField === fieldKey) {
+      stopDictation();
+      return;
+    }
+    stopDictation();
+    stopRecording();
+    const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const dom = fieldDom(fieldKey);
+    if (!SpeechRec) {
+      dom.status.textContent = "Talk-to-Text isn't supported in this browser — tap Voice Note or use your keyboard mic.";
+      return;
+    }
+    const baseText = dom.input.value.trim();
+    const rec = new SpeechRec();
+    rec.continuous = true;
+    rec.interimResults = true;
+    rec.lang = "en-US";
+    voiceEngine.recognition = rec;
+    voiceEngine.dictateField = fieldKey;
+    dom.dictateBtn.classList.add("active");
+    dom.dictateBtn.querySelector(".tlc-vbtn-lbl").textContent = "Stop Mic";
+    dom.status.textContent = "Listening… speak naturally";
+
+    rec.onresult = ev => {
+      let finals = "", interims = "";
+      for (let i = 0; i < ev.results.length; i++) {
+        const seg = ev.results[i][0].transcript;
+        if (ev.results[i].isFinal) finals += seg + " ";
+        else interims += seg;
+      }
+      const spoken = (finals + interims).trim();
+      dom.input.value = [baseText, spoken].filter(Boolean).join(" ");
+    };
+    rec.onerror = ev => {
+      dom.status.textContent = ev && ev.error === "not-allowed"
+        ? "Microphone permission blocked — check browser mic access or type above."
+        : "";
+      stopDictation();
+    };
+    rec.onend = () => {
+      if (voiceEngine.dictateField === fieldKey) {
+        dom.status.textContent = dom.input.value.trim() ? "Transcribed" : "";
+        stopDictation();
+      }
+    };
+    try { rec.start(); } catch (_) { stopDictation(); }
+  }
+
+  function pickAudioMime(){
+    if (typeof MediaRecorder === "undefined" || typeof MediaRecorder.isTypeSupported !== "function") return "";
+    const candidates = ["audio/webm;codecs=opus", "audio/webm", "audio/mp4", "audio/ogg;codecs=opus"];
+    return candidates.find(t => MediaRecorder.isTypeSupported(t)) || "";
+  }
+
+  async function toggleRecording(fieldKey){
+    if (voiceEngine.recordField === fieldKey && voiceEngine.recorder && voiceEngine.recorder.state !== "inactive") {
+      await stopRecording();
+      return;
+    }
+    stopDictation();
+    await stopRecording();
+    const dom = fieldDom(fieldKey);
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia || typeof MediaRecorder === "undefined") {
+      dom.status.textContent = "Voice recording isn't available in this browser.";
+      return;
+    }
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const mimeType = pickAudioMime();
+      const recorder = mimeType ? new MediaRecorder(stream, { mimeType }) : new MediaRecorder(stream);
+      voiceEngine.recordStream = stream;
+      voiceEngine.recorder = recorder;
+      voiceEngine.recordField = fieldKey;
+      voiceEngine.recordChunks = [];
+      voiceEngine.recordSec = 0;
+
+      dom.recordBtn.classList.add("active");
+      dom.recordBtn.querySelector(".tlc-vbtn-lbl").textContent = "Stop (0:00)";
+      dom.status.textContent = "Recording voice note…";
+
+      recorder.ondataavailable = e => {
+        if (e.data && e.data.size > 0) voiceEngine.recordChunks.push(e.data);
+      };
+      recorder.onstop = () => {
+        const finalDur = Math.max(1, voiceEngine.recordSec);
+        const actualMime = recorder.mimeType || mimeType || "audio/webm";
+        const blob = new Blob(voiceEngine.recordChunks, { type: actualMime });
+        stream.getTracks().forEach(t => t.stop());
+        voiceEngine.recordStream = null;
+        voiceEngine.recorder = null;
+        voiceEngine.recordField = null;
+        dom.recordBtn.classList.remove("active");
+        dom.recordBtn.querySelector(".tlc-vbtn-lbl").textContent = "Voice Note";
+
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          if (typeof reader.result === "string" && blob.size > 0) {
+            tlcState.voice[fieldKey] = { dataUrl: reader.result, durationSec: finalDur };
+            dom.audio.src = reader.result;
+            dom.pill.hidden = false;
+            dom.status.textContent = `Voice note attached (${fmtSec(finalDur)})`;
+          } else {
+            dom.status.textContent = "";
+          }
+          if (voiceEngine.stopPromiseResolve) {
+            const done = voiceEngine.stopPromiseResolve;
+            voiceEngine.stopPromiseResolve = null;
+            done();
+          }
+        };
+        reader.readAsDataURL(blob);
+      };
+
+      recorder.start();
+      voiceEngine.recordTimer = setInterval(() => {
+        voiceEngine.recordSec += 1;
+        dom.recordBtn.querySelector(".tlc-vbtn-lbl").textContent = `Stop (${fmtSec(voiceEngine.recordSec)})`;
+        if (voiceEngine.recordSec >= TLC_CONFIG.maxVoiceSeconds) {
+          stopRecording();
+        }
+      }, 1000);
+    } catch (_) {
+      dom.status.textContent = "Could not access microphone — please allow mic access or type above.";
+    }
+  }
+
+  function clearVoiceNote(fieldKey){
+    tlcState.voice[fieldKey] = { dataUrl: "", durationSec: 0 };
+    const dom = fieldDom(fieldKey);
+    dom.audio.pause();
+    dom.audio.removeAttribute("src");
+    dom.pill.hidden = true;
+    dom.status.textContent = "";
+  }
+
+  tlcSurvey.addEventListener("click", e => {
+    const dBtn = e.target.closest("[data-dictate]");
+    if (dBtn) { toggleDictation(dBtn.dataset.dictate); return; }
+    const rBtn = e.target.closest("[data-record]");
+    if (rBtn) { toggleRecording(rBtn.dataset.record); return; }
+    const cBtn = e.target.closest("[data-clear-audio]");
+    if (cBtn) { clearVoiceNote(cBtn.dataset.clearAudio); }
+  });
+
+  function resetTlcSurvey(){
+    stopAllVoice();
+    tlcState.openNum = null;
+    tlcState.endNum = null;
+    tlcState.submitted = false;
+    clearVoiceNote("look");
+    clearVoiceNote("body");
+    tlcLookInput.value = "";
+    tlcBodyInput.value = "";
+    $("tlcLookStatus").textContent = "";
+    $("tlcBodyStatus").textContent = "";
+    tlcCardOpen.classList.remove("needs-attn");
+    tlcCardEnd.classList.remove("needs-attn");
+    renderScaleSelection(tlcOpenScale, null);
+    renderScaleSelection(tlcEndScale, null);
+    updateDistanceUI();
+    tlcFormErr.hidden = true;
+    tlcSubmitBtn.disabled = false;
+    tlcSubmitBtn.textContent = "Complete Check-In";
+    $("tlcSkipTopBtn").innerHTML = 'Not now <span aria-hidden="true">&#10005;</span>';
+    tlcForm.hidden = false;
+    $("tlcSubtitle").hidden = false;
+    tlcDoneView.hidden = true;
+  }
+
+  const tlcInviteOverlay = $("tlcInviteOverlay"),
+        tlcBeginBtn = $("tlcBeginBtn"),
+        tlcInviteSkipBtn = $("tlcInviteSkipBtn");
+  let tlcInviteTransitionTimer = null;
+
+  function hideTlcInvite(){
+    clearTimeout(tlcInviteTransitionTimer);
+    mBox.classList.remove("invite-mode");
+    tlcInviteOverlay.classList.remove("show", "fading-out");
+    tlcInviteOverlay.setAttribute("aria-hidden", "true");
+  }
+
+  function openTlcInvite(){
+    if (mBox.classList.contains("survey-mode") || tlcInviteOverlay.classList.contains("show")) return;
+    vimeoCmd("setCurrentTime", 0);
+    vimeoCmd("pause");
+    hideResume();
+    hideExitHint();
+    tlcInviteOverlay.classList.remove("fading-out");
+    mBox.classList.add("invite-mode");
+    tlcInviteOverlay.setAttribute("aria-hidden", "false");
+    void tlcInviteOverlay.offsetWidth;
+    tlcInviteOverlay.classList.add("show");
+  }
+
+  function beginSurveyFromInvite(){
+    if (!tlcInviteOverlay.classList.contains("show")) {
+      openTlcSurvey();
+      return;
+    }
+    tlcInviteOverlay.classList.add("fading-out");
+    clearTimeout(tlcInviteTransitionTimer);
+    tlcInviteTransitionTimer = setTimeout(() => {
+      hideTlcInvite();
+      openTlcSurvey();
+    }, 380);
+  }
+
+  function openTlcSurvey(){
+    if (mBox.classList.contains("survey-mode")) return;
+    hideTlcInvite();
+    vimeoCmd("pause");
+    hideResume();
+    hideExitHint();
+    mBox.classList.add("survey-mode");
+    tlcSurvey.setAttribute("aria-hidden", "false");
+    $("tlcScroll").scrollTop = 0;
+    const firstBtn = tlcOpenScale.querySelector(".tlc-num-btn");
+    if (firstBtn) setTimeout(() => firstBtn.focus({ preventScroll: true }), 180);
+  }
+
+  function closeTlcSurveyToVideo(restart){
+    stopAllVoice();
+    hideTlcInvite();
+    mBox.classList.remove("survey-mode");
+    tlcSurvey.setAttribute("aria-hidden", "true");
+    if (restart) {
+      pauser.endHandled = false;
+      pauser.atEnd = false;
+      vimeoCmd("setCurrentTime", 0);
+      vimeoCmd("play");
+    }
+    $("close").focus({ preventScroll: true });
+  }
+
+  function readSavedStationLocation(){
+    try {
+      const list = JSON.parse(localStorage.getItem("vc_saved_locations_v1") || "[]");
+      return Array.isArray(list) && list.length > 0 ? String(list[0] || "") : "";
+    } catch (_) {
+      return "";
+    }
+  }
+
+  tlcForm.addEventListener("submit", async e => {
+    e.preventDefault();
+    if (tlcState.openNum === null || tlcState.endNum === null) {
+      if (tlcState.openNum === null) tlcCardOpen.classList.add("needs-attn");
+      if (tlcState.endNum === null) tlcCardEnd.classList.add("needs-attn");
+      tlcFormErr.textContent = "Please tap both your opening number (#1) and ending number (#2) above.";
+      tlcFormErr.hidden = false;
+      const target = tlcState.openNum === null ? tlcCardOpen : tlcCardEnd;
+      target.scrollIntoView({ behavior: "smooth", block: "center" });
+      return;
+    }
+
+    tlcSubmitBtn.disabled = true;
+    tlcSubmitBtn.textContent = "Saving Check-In…";
+    tlcFormErr.hidden = true;
+
+    // Ensure any live voice recording or dictation finishes cleanly before packaging payload
+    await stopAllVoice();
+
+    const enc = getEncourager(tlcState.openNum, tlcState.endNum);
+    const payload = {
+      formType: "thought_loop_clearing_reflection",
+      submittedAt: new Date().toISOString(),
+      videoId: activeVideo ? activeVideo.id : 2,
+      vimeoId: activeVideo ? activeVideo.vimeoId : "1245793823",
+      videoTitle: activeVideo ? activeVideo.title : "TAG 1 - Thought Loop Clearing",
+      stationLocation: readSavedStationLocation(),
+      openingNumber: tlcState.openNum,
+      endingNumber: tlcState.endNum,
+      pointDrop: tlcState.openNum - tlcState.endNum,
+      distance: Math.abs(tlcState.openNum - tlcState.endNum),
+      encouragerTitle: enc.title,
+      loopAppearance: tlcLookInput.value.trim(),
+      loopAppearanceVoiceDataUrl: tlcState.voice.look.dataUrl,
+      loopAppearanceVoiceDurationSec: tlcState.voice.look.durationSec,
+      bodyLocation: tlcBodyInput.value.trim(),
+      bodyLocationVoiceDataUrl: tlcState.voice.body.dataUrl,
+      bodyLocationVoiceDurationSec: tlcState.voice.body.durationSec
+    };
+
+    // Keep lightweight local backup summary (without bulky base64 audio) for reliability
+    try {
+      const localHistory = JSON.parse(localStorage.getItem("solrevibe_tlc_reflections_v1") || "[]");
+      localHistory.unshift({
+        submittedAt: payload.submittedAt,
+        stationLocation: payload.stationLocation,
+        openingNumber: payload.openingNumber,
+        endingNumber: payload.endingNumber,
+        pointDrop: payload.pointDrop,
+        distance: payload.distance,
+        loopAppearance: payload.loopAppearance,
+        hasLookVoiceNote: Boolean(payload.loopAppearanceVoiceDataUrl),
+        bodyLocation: payload.bodyLocation,
+        hasBodyVoiceNote: Boolean(payload.bodyLocationVoiceDataUrl)
+      });
+      localStorage.setItem("solrevibe_tlc_reflections_v1", JSON.stringify(localHistory.slice(0, 30)));
+    } catch (_) {}
+
+    const requests = [];
+    if (TLC_CONFIG.googleSheetsWebAppUrl) {
+      requests.push(
+        fetch(TLC_CONFIG.googleSheetsWebAppUrl, {
+          method: "POST",
+          mode: "no-cors",
+          cache: "no-cache",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify(payload)
+        }).catch(() => {})
+      );
+    }
+    if (TLC_CONFIG.apiEndpoint) {
+      requests.push(
+        fetch(TLC_CONFIG.apiEndpoint, {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Accept: "application/json" },
+          body: JSON.stringify(payload)
+        }).catch(() => {})
+      );
+    }
+
+    await Promise.race([
+      Promise.allSettled(requests),
+      new Promise(r => setTimeout(r, 2500))
+    ]);
+
+    tlcState.submitted = true;
+    const drop = payload.pointDrop;
+    $("tlcDoneSummary").textContent = drop > 0
+      ? `Opening ${payload.openingNumber} → Ending ${payload.endingNumber} · ${drop}-point drop`
+      : `Opening ${payload.openingNumber} → Ending ${payload.endingNumber}`;
+    $("tlcDoneText").textContent = enc.text;
+    $("tlcSkipTopBtn").innerHTML = 'Close <span aria-hidden="true">&#10005;</span>';
+    tlcForm.hidden = true;
+    $("tlcSubtitle").hidden = true;
+    tlcDoneView.hidden = false;
+    $("tlcScroll").scrollTop = 0;
+    $("tlcDoneCloseBtn").focus({ preventScroll: true });
+  });
+
+  tlcBeginBtn.addEventListener("click", beginSurveyFromInvite);
+  tlcInviteSkipBtn.addEventListener("click", closeModal);
+  $("tlcReplayBtn").addEventListener("click", () => closeTlcSurveyToVideo(true));
+  $("tlcSkipTopBtn").addEventListener("click", closeModal);
+  $("tlcSkipBottomBtn").addEventListener("click", closeModal);
+  $("tlcDoneCloseBtn").addEventListener("click", closeModal);
+  mCheckinTrigger.addEventListener("click", openTlcSurvey);
+
+  // ---- Auto-pause points & Vimeo end-screen suppression (Official SDK + postMessage fallback) ----
   const VIMEO_ORIGIN = "https://player.vimeo.com";
-  const pauser = { points: [], fired: {}, last: 0, holdAt: null };
-  const resumeOverlay = $("resumeOverlay"), resumeBtn = $("resumeBtn"), resumeNote = $("resumeNote");
+  const pauser = { active: false, points: [], fired: {}, last: 0, holdAt: null, exitHint: false, endSurvey: null, endHandled: false, atEnd: false, sdkReady: false };
+  const resumeOverlay = $("resumeOverlay"), resumeBtn = $("resumeBtn"), resumeBtnLabel = $("resumeBtnLabel"), resumeNote = $("resumeNote");
+  let vimeoBindTimers = [];
+  let vimeoSdk = null;
+
+  function detachVimeoSdk(){
+    if (!vimeoSdk) return;
+    try {
+      ["play", "ended", "timeupdate", "seeked"].forEach(ev => {
+        if (typeof vimeoSdk.off === "function") vimeoSdk.off(ev);
+      });
+    } catch(_) {}
+    vimeoSdk = null;
+    pauser.sdkReady = false;
+  }
 
   function vimeoCmd(method, value){
+    if (vimeoSdk && pauser.sdkReady) {
+      try {
+        if (method === "pause") { vimeoSdk.pause().catch(() => {}); return; }
+        if (method === "play") { vimeoSdk.play().catch(() => {}); return; }
+        if (method === "setCurrentTime") { vimeoSdk.setCurrentTime(value).catch(() => {}); return; }
+      } catch(_) {}
+    }
     if (!player.contentWindow) return;
     try {
       player.contentWindow.postMessage(JSON.stringify(value === undefined ? {method} : {method, value}), VIMEO_ORIGIN);
@@ -613,19 +2705,42 @@ html.is-tablet .exit-hint { top: 62px !important; right: 10px !important; }
   }
 
   function showResume(idx){
+    pauser.atEnd = false;
+    resumeOverlay.classList.remove("end-cover");
+    resumeBtnLabel.textContent = "Play Again";
     resumeNote.textContent = `Paused · Up next: Step ${idx + 2}`;
     resumeOverlay.classList.add("show"); resumeOverlay.setAttribute("aria-hidden", "false");
     resumeBtn.focus({ preventScroll: true });
   }
 
+  function showEndReplay(){
+    pauser.atEnd = true;
+    resumeOverlay.classList.add("end-cover");
+    resumeBtnLabel.textContent = "Watch Again";
+    resumeNote.textContent = "Session Complete";
+    resumeOverlay.classList.add("show"); resumeOverlay.setAttribute("aria-hidden", "false");
+    vimeoCmd("setCurrentTime", 0);
+    vimeoCmd("pause");
+  }
+
   function hideResume(){
     pauser.holdAt = null;
+    pauser.atEnd = false;
+    resumeOverlay.classList.remove("end-cover");
     if (!resumeOverlay.classList.contains("show")) return;
     resumeOverlay.classList.remove("show"); resumeOverlay.setAttribute("aria-hidden", "true");
   }
 
   resumeBtn.addEventListener("click", () => {
+    const restart = pauser.atEnd;
     hideResume();
+    if (restart) {
+      pauser.endHandled = false;
+      pauser.fired = {};
+      pauser.last = 0;
+      hideExitHint();
+      vimeoCmd("setCurrentTime", 0);
+    }
     vimeoCmd("play");
     $("close").focus({ preventScroll: true });
   });
@@ -644,44 +2759,59 @@ html.is-tablet .exit-hint { top: 62px !important; right: 10px !important; }
   }
 
   function armPauses(v){
+    vimeoBindTimers.forEach(clearTimeout);
+    vimeoBindTimers = [];
+    detachVimeoSdk();
+    pauser.active = !!v;
     pauser.points = (v && v.pausePoints) ? v.pausePoints.slice().sort((a,b) => a-b) : [];
     pauser.exitHint = !!(v && v.exitHint);
-    pauser.fired = {}; pauser.last = 0;
-    hideResume(); hideExitHint();
+    pauser.endSurvey = (v && v.endSurvey) || null;
+    pauser.fired = {};
+    pauser.last = 0;
+    pauser.endHandled = false;
+    pauser.atEnd = false;
+    hideResume();
+    hideExitHint();
   }
 
-  const tracking = () => pauser.points.length > 0 || pauser.exitHint;
-
-  function listenVimeo(){
-    if (!tracking()) return;
-    // Vimeo's postMessage API uses legacy names (playProgress/seek/finish); register both naming schemes
-    ["timeupdate", "playProgress", "seeked", "seek", "ended", "finish", "play"].forEach(ev => vimeoCmd("addEventListener", ev));
+  function handleVideoEnd(){
+    pauser.endHandled = true;
+    pauser.fired = {};
+    pauser.last = 0;
+    hideResume();
+    vimeoCmd("pause"); // Prevent Vimeo's default "More from SOL REViBE Team" end-screen from taking over
+    if (pauser.endSurvey === "thought-loop") {
+      openTlcInvite();
+    } else {
+      showExitHint();
+      showEndReplay();
+    }
   }
 
-  player.addEventListener("load", listenVimeo);
-
-  window.addEventListener("message", e => {
-    if (!tracking()) return;
-    if (!e.origin || (!e.origin.includes("player.vimeo.com") && !e.origin.includes("vimeo.com"))) return;
-    let d = e.data;
-    if (typeof d === "string") { try { d = JSON.parse(d); } catch(_) { return; } }
-    if (!d || !d.event) return;
-    if (d.event === "ready") { listenVimeo(); return; }
-    const ev = { playProgress: "timeupdate", seek: "seeked", finish: "ended" }[d.event] || d.event;
-    if (ev === "play") { hideResume(); return; }                           // resumed via the player's own controls
-    if (ev === "ended") { pauser.fired = {}; pauser.last = 0; hideResume(); showExitHint(); return; }   // replay -> pauses work again
-    const t = d.data && typeof d.data.seconds === "number" ? d.data.seconds : null;
+  function processVimeoEvent(ev, data){
+    if (!pauser.active) return;
+    if (ev === "play") { hideResume(); hideTlcInvite(); return; }           // resumed via the player's own controls
+    if (ev === "ended") { handleVideoEnd(); return; }
+    const t = data && typeof data.seconds === "number" ? data.seconds : null;
     if (t === null) return;
-    // Exit callout: show in the final seconds, hide again if the viewer rewinds
-    const dur = d.data && typeof d.data.duration === "number" ? d.data.duration : 0;
+    const dur = data && typeof data.duration === "number" ? data.duration : 0;
     if (dur > 0) {
       const left = dur - t;
       if (left <= EXIT_HINT_SECONDS && t > 0) showExitHint();
       else if (left > EXIT_HINT_SECONDS + 2) hideExitHint();
+
+      // Re-arm end handler if viewer rewinds back into the video
+      if (left > 2) pauser.endHandled = false;
+
+      // Soft-delete Vimeo's native "Recommended videos" end-screen by intercepting right at completion
+      if (!pauser.endHandled && t > 1 && left <= 0.75) {
+        handleVideoEnd();
+        return;
+      }
     }
     // Re-arm any pause point that is ahead of the playhead (restart or seek back)
     pauser.points.forEach(p => { if (t < p - 0.5) pauser.fired[p] = false; });
-    if (ev === "seeked") {                                                  // manual seeks never trigger a pause
+    if (ev === "seeked") {                                                  // manual seeks never trigger a step pause
       if (pauser.holdAt === null || Math.abs(t - pauser.holdAt) > 0.5) hideResume();
       pauser.last = t; return;
     }
@@ -697,16 +2827,95 @@ html.is-tablet .exit-hint { top: 62px !important; right: 10px !important; }
       pauser.holdAt = hit;
       showResume(pauser.points.indexOf(hit));                                // "Play Again" button over the video
     }
+  }
+
+  function bindVimeoSdk(){
+    if (!pauser.active || vimeoSdk) return;
+    if (!window.Vimeo || typeof window.Vimeo.Player !== "function") return;
+    try {
+      const inst = new window.Vimeo.Player(player);
+      vimeoSdk = inst;
+      inst.ready().then(() => {
+        if (vimeoSdk === inst) pauser.sdkReady = true;
+      }).catch(() => {});
+      inst.on("play", () => processVimeoEvent("play", null));
+      inst.on("ended", () => processVimeoEvent("ended", null));
+      inst.on("timeupdate", d => processVimeoEvent("timeupdate", d));
+      inst.on("seeked", d => processVimeoEvent("seeked", d));
+    } catch(_) {
+      vimeoSdk = null;
+      pauser.sdkReady = false;
+    }
+  }
+
+  function listenVimeo(){
+    if (!pauser.active) return;
+    bindVimeoSdk();
+    if (pauser.sdkReady) return;
+    // Raw postMessage fallback for environments where player.js hasn't loaded yet
+    ["timeupdate", "playProgress", "seeked", "seek", "ended", "finish", "play"].forEach(ev => {
+      if (!player.contentWindow) return;
+      try { player.contentWindow.postMessage(JSON.stringify({method: "addEventListener", value: ev}), VIMEO_ORIGIN); } catch(_) {}
+    });
+  }
+
+  player.addEventListener("load", listenVimeo);
+
+  window.addEventListener("message", e => {
+    if (!pauser.active || pauser.sdkReady) return;
+    if (!e.origin || (!e.origin.includes("player.vimeo.com") && !e.origin.includes("vimeo.com"))) return;
+    let d = e.data;
+    if (typeof d === "string") { try { d = JSON.parse(d); } catch(_) { return; } }
+    if (!d || !d.event) return;
+    if (d.event === "ready") { listenVimeo(); return; }
+    const ev = { playProgress: "timeupdate", seek: "seeked", finish: "ended" }[d.event] || d.event;
+    processVimeoEvent(ev, d.data);
   });
+
+  function openComingSoon(v){
+    if(!v) return;
+    lastFocus = document.activeElement;
+    $("csImg").src = v.thumb || "";
+    $("csImg").alt = v.title || "";
+    const parts = [v.category, v.collection, v.series, v.episode ? `Episode ${v.episode}` : ""].filter(Boolean);
+    $("csCrumbs").textContent = parts.join(" › ");
+    $("csTitle").textContent = v.title;
+    $("csDesc").textContent = v.description || "";
+    comingSoonModal.classList.add("open");
+    comingSoonModal.setAttribute("aria-hidden", "false");
+    document.body.classList.add("modal-open");
+    $("csClose").focus();
+  }
+
+  function closeComingSoon(){
+    if(!comingSoonModal.classList.contains("open")) return;
+    comingSoonModal.classList.remove("open");
+    comingSoonModal.setAttribute("aria-hidden", "true");
+    document.body.classList.remove("modal-open");
+    if(lastFocus) lastFocus.focus({ preventScroll: true });
+  }
 
   function openModal(v){
     if(!v) return;
+    if (v.comingSoon) {
+      openComingSoon(v);
+      return;
+    }
+    stopDirectAudio();
+    activeVideo = v;
     countView(v);
     lastFocus = document.activeElement;
+    resetTlcSurvey();
+    hideTlcInvite();
+    mBox.classList.remove("survey-mode");
+    tlcSurvey.setAttribute("aria-hidden", "true");
     $("m-title").textContent = v.title;
     $("m-desc").textContent = `${v.category} · ${v.duration} · ${fmtViews(v.views)}`;
+    mCheckinTrigger.classList.toggle("visible", v.endSurvey === "thought-loop");
     armPauses(v);
-    player.src = `https://player.vimeo.com/video/${v.vimeoId}?autoplay=1`;
+    player.src = `https://player.vimeo.com/video/${v.vimeoId}?autoplay=1&playsinline=1&title=0&byline=0&portrait=0&dnt=1&pip=0&api=1`;
+    bindVimeoSdk();
+    vimeoBindTimers = [setTimeout(listenVimeo, 500), setTimeout(listenVimeo, 1400), setTimeout(listenVimeo, 3000)];
     modal.classList.add("open"); modal.setAttribute("aria-hidden","false");
     document.body.classList.add("modal-open");
     $("close").focus();
@@ -714,10 +2923,15 @@ html.is-tablet .exit-hint { top: 62px !important; right: 10px !important; }
 
   function closeModal(){
     if(!modal.classList.contains("open")) return;
-    const backToTags = pauser.exitHint;                                      // instructional video -> land back on the main TAGs page
+    const backToTags = pauser.exitHint || pauser.endSurvey === "thought-loop";
+    resetTlcSurvey();
+    hideTlcInvite();
+    mBox.classList.remove("survey-mode");
+    tlcSurvey.setAttribute("aria-hidden", "true");
     modal.classList.remove("open"); modal.setAttribute("aria-hidden","true");
     document.body.classList.remove("modal-open");
     armPauses(null);
+    activeVideo = null;
     player.src = "about:blank"; player.removeAttribute("src"); // stop audio
     if(lastFocus) lastFocus.focus({ preventScroll: backToTags });
     if (backToTags) window.scrollTo({ top: 0, behavior: "smooth" });
@@ -726,11 +2940,15 @@ html.is-tablet .exit-hint { top: 62px !important; right: 10px !important; }
   search.addEventListener("input", () => { state.query = search.value; render(); });
   clearBtn.addEventListener("click", () => { search.value=""; state.query=""; render(); search.focus(); });
   chips.addEventListener("click", e => { const b=e.target.closest(".chip"); if(b){ state.cat=b.dataset.cat; update(); }});
+  collectionSel.addEventListener("change", () => { state.collection = collectionSel.value; state.series = "All"; update(); });
+  seriesSel.addEventListener("change", () => { state.series = seriesSel.value; update(); });
   side.addEventListener("click", e => { const b=e.target.closest("[data-view]"); if(b){ state.view=b.dataset.view; update(); }});
   sortSel.addEventListener("change", () => { state.sort = sortSel.value; if(state.view==="recent"||state.view==="viewed") state.view="all"; update(); });
-  $("reset").addEventListener("click", () => { search.value=""; Object.assign(state,{query:"",cat:"All",view:"all",sort:"recent"}); sortSel.value="recent"; update(); });
+  $("reset").addEventListener("click", () => { search.value=""; Object.assign(state,{query:"",cat:"All",collection:"All",series:"All",view:"all",sort:"recent"}); sortSel.value="recent"; update(); });
   featuredEl.addEventListener("click", e => { const b=e.target.closest("[data-id]"); if(b) openModal(videos.find(v=>v.id===+b.dataset.id)); });
   grid.addEventListener("click", e => {
+    const spk = e.target.closest("[data-audio-id]");
+    if(spk){ e.stopPropagation(); e.preventDefault(); toggleDirectAudio(videos.find(v=>v.id===+spk.dataset.audioId)); return; }
     const sv = e.target.closest("[data-save]");
     if(sv){ e.stopPropagation(); const id=+sv.dataset.save; saved.has(id)?saved.delete(id):saved.add(id);
       localStorage.setItem("sol-saved", JSON.stringify([...saved])); render(); return; }
@@ -740,12 +2958,26 @@ html.is-tablet .exit-hint { top: 62px !important; right: 10px !important; }
     if((e.key==="Enter"||e.key===" ") && e.target.classList.contains("card")){ e.preventDefault(); openModal(videos.find(v=>v.id===+e.target.dataset.id)); }
   });
   $("close").addEventListener("click", closeModal);
-  modal.addEventListener("click", e => { if(e.target===modal) closeModal(); });
+  $("csClose").addEventListener("click", closeComingSoon);
+  $("csDoneBtn").addEventListener("click", closeComingSoon);
+  comingSoonModal.addEventListener("click", e => { if (e.target === comingSoonModal) closeComingSoon(); });
+  modal.addEventListener("click", e => {
+    if (e.target === modal) {
+      // Prevent accidental backdrop tap from discarding an in-progress check-in on tablets
+      if ((mBox.classList.contains("survey-mode") || mBox.classList.contains("invite-mode")) && !tlcState.submitted) return;
+      closeModal();
+    }
+  });
   document.addEventListener("keydown", e => {
-    if(e.key==="Escape") closeModal();
-    if(e.key==="Tab" && modal.classList.contains("open")){ e.preventDefault();
+    if(e.key==="Escape") { closeComingSoon(); closeModal(); }
+    if(e.key==="Tab" && modal.classList.contains("open") && !mBox.classList.contains("survey-mode") && !mBox.classList.contains("invite-mode")){
+      const hasCheckinBtn = mCheckinTrigger.classList.contains("visible");
       const r = resumeOverlay.classList.contains("show");
-      (r && document.activeElement === $("close") ? resumeBtn : $("close")).focus(); }
+      if (!hasCheckinBtn) {
+        e.preventDefault();
+        (r && document.activeElement === $("close") ? resumeBtn : $("close")).focus();
+      }
+    }
   });
 
   renderFeatured(); update();
